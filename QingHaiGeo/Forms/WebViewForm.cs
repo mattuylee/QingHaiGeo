@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefSharp;
+using CefSharp.WinForms;
 
 namespace QingHaiGeo
 {
@@ -24,15 +26,18 @@ namespace QingHaiGeo
                 return WebViewForm.instance;
             }
         }
-
+        private ChromiumWebBrowser browser = new ChromiumWebBrowser(Application.StartupPath + "\\web\\index.html");
         private WebViewForm()
         {
             InitializeComponent();
-            webBrowser.ObjectForScripting = this;
+            this.browser.RegisterJsObject("RefSharp", this, false);
+            this.browser.Dock = DockStyle.Fill;
+            this.browser.Parent = this;
+            this.browser.Show();
         }
         private void WebAPIForm_Activated(object sender, EventArgs e)
         {
-            this.webBrowser.Navigate(Application.StartupPath + "\\web\\index.html");
+            this.browser.Load(Application.StartupPath + "\\web\\index.html");
         }
         private void WebAPIForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -81,4 +86,5 @@ namespace QingHaiGeo
                 new VideoForm(code, TargetType.knowledge).ShowDialog();
         }
     }
+
 }

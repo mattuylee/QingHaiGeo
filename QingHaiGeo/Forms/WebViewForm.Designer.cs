@@ -28,25 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.SuspendLayout();
             // 
-            // webBrowser
-            // 
-            this.webBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webBrowser.Location = new System.Drawing.Point(0, 0);
-            this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser.Name = "webBrowser";
-            this.webBrowser.Size = new System.Drawing.Size(800, 450);
-            this.webBrowser.TabIndex = 0;
-            // 
-            // WebAPIForm
+            // WebViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.webBrowser);
-            this.Name = "WebAPIForm";
+            this.Name = "WebViewForm";
             this.Text = "后台管理";
             this.Activated += new System.EventHandler(this.WebAPIForm_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WebAPIForm_FormClosing);
@@ -55,7 +44,5 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.WebBrowser webBrowser;
     }
 }

@@ -18,7 +18,6 @@ namespace QingHaiGeo
         private TargetType targetType;
         //视频上传线程
         private Thread uploadThread = null;
-
         public VideoForm(string code, TargetType targetType)
         {
             InitializeComponent();
