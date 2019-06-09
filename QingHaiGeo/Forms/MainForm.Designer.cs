@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.btnConfig = new System.Windows.Forms.Button();
             this.btnLogin = new System.Windows.Forms.Button();
             this.btnScan = new System.Windows.Forms.Button();
@@ -113,6 +114,7 @@
             this.Controls.Add(this.btnScan);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.btnConfig);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "青海地学";
             this.ResumeLayout(false);

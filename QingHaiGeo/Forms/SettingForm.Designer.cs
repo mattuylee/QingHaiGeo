@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingForm));
             this.lblServer = new System.Windows.Forms.Label();
             this.txtServer = new System.Windows.Forms.TextBox();
             this.lblDbServer = new System.Windows.Forms.Label();
@@ -211,6 +212,7 @@
             this.Controls.Add(this.txtDbServer);
             this.Controls.Add(this.lblServer);
             this.Controls.Add(this.txtServer);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingForm";
             this.Text = "Setting";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingForm_FormClosing);

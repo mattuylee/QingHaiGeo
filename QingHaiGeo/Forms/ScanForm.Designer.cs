@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScanForm));
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.pnlButton = new System.Windows.Forms.Panel();
             this.btnStore = new System.Windows.Forms.Button();
@@ -254,6 +255,7 @@
             this.Controls.Add(this.lvwList);
             this.Controls.Add(this.pnlTop);
             this.Controls.Add(this.pnlBottom);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ScanForm";
             this.Text = "批量扫描入库";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanForm_FormClosing);

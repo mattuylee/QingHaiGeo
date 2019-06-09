@@ -1,0 +1,2 @@
+
+CefSharp51_x32.zip 文件是CefSharp的依赖文件，项目打包后需要将解压后的文件复制到程序运行目录，否则无法载入Chromium。
