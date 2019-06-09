@@ -24,7 +24,8 @@ namespace QingHaiGeo
                 return MainForm.instance;
             }
         }
-
+        private bool dbConnected = false;
+        private bool serverConnected = false;
         private MainForm()
         {
             InitializeComponent();
@@ -78,7 +79,10 @@ namespace QingHaiGeo
             Task.Run(delegate ()
             {
                 if (WebAPI.TestServer())
+                {
                     MessageBox.Show("连接服务器成功！", "测试连接", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.serverConnected = true;
+                }
                 else
                     MessageBox.Show("连接服务器失败！", "测试连接", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Invoke(endTest);
@@ -103,7 +107,10 @@ namespace QingHaiGeo
             Task.Run(delegate ()
             {
                 if (WebAPI.TestDatabase())
+                {
                     MessageBox.Show("连接数据库成功！", "测试连接", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.dbConnected = true;
+                }
                 else
                     MessageBox.Show("连接数据库失败！", "测试连接", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Invoke(endTest);
@@ -112,6 +119,20 @@ namespace QingHaiGeo
 
         private void btnManage_Click(object sender, EventArgs e)
         {
+            if (!Config.IsLogged)
+                LoginForm.Instance.ShowDialog();
+            if (!Config.IsLogged)
+                return;
+            if (!this.dbConnected || !this.serverConnected)
+            {
+                MessageBox.Show("请等待服务器连接测试结束。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (!this.dbConnected && btnTestDb.Enabled)
+                    btnTestDb_Click(null, null);
+                if (!this.serverConnected && btnTestServer.Enabled)
+                    btnTestServer_Click(null, null);
+                return;
+            }
+            this.Hide();
             WebViewForm.Instance.Show();
             WebViewForm.Instance.Focus();
         }

@@ -77,7 +77,7 @@ namespace QingHaiGeo
                 FileInfo dataFile = new FileInfo(relicDir.FullName + "\\data.txt");
                 if (!dataFile.Exists)
                 {
-                    this.BeginInvoke(new Action<string, Relic, string, int>(InsertOneRelic),
+                    this.Invoke(new Action<string, Relic, string, int>(InsertOneRelic),
                         relicDir.FullName, null, "缺失data.txt文件", i - successCount);
                     continue;
                 }
@@ -86,7 +86,8 @@ namespace QingHaiGeo
                 relic.code = Config.ReadIniItem(dataFile.FullName, "遗迹信息", "编号").Trim();
                 if (relic.code == string.Empty)
                 {
-                    InsertOneRelic(relicDir.FullName, null, "缺失遗迹编号");
+                    this.Invoke(new Action<string, Relic, string, int>(InsertOneRelic),
+                        relicDir.FullName, null, "缺失遗迹编号", i - successCount);
                     continue;
                 }
                 //读取遗迹名称
@@ -113,7 +114,7 @@ namespace QingHaiGeo
                     }
                     if (relic.relicTypeCode == string.Empty)
                     {
-                        this.BeginInvoke(new Action<string, Relic, string, int>(InsertOneRelic),
+                        this.Invoke(new Action<string, Relic, string, int>(InsertOneRelic),
                             relicDir.FullName, relic, "遗迹类型缺失", i - successCount);
                         continue;
                     }
@@ -130,7 +131,7 @@ namespace QingHaiGeo
                     }
                     if (relic.relicType == null)
                     {
-                        this.BeginInvoke(new Action<string, Relic, string, int>(InsertOneRelic),
+                        this.Invoke(new Action<string, Relic, string, int>(InsertOneRelic),
                             relicDir.FullName, relic, "遗迹类型无效", i - successCount);
                         continue;
                     }
@@ -145,7 +146,7 @@ namespace QingHaiGeo
                 flag &= Convert.ToByte(Double.TryParse(altitude, out relic.location.altitude));
                 if (flag == 0)
                 {
-                    this.BeginInvoke(new Action<string, Relic, string, int>(InsertOneRelic),
+                    this.Invoke(new Action<string, Relic, string, int>(InsertOneRelic),
                         relicDir.FullName, relic, "位置信息有误", i - successCount);
                     continue;
                 }
@@ -168,7 +169,7 @@ namespace QingHaiGeo
                 }
                 catch
                 {
-                    this.BeginInvoke(new Action<string, Relic, string, int>(InsertOneRelic),
+                    this.Invoke(new Action<string, Relic, string, int>(InsertOneRelic),
                         relicDir.FullName, relic, "遗迹介绍缺失", i - successCount);
                     continue;
                 }
@@ -207,7 +208,7 @@ namespace QingHaiGeo
                 }
                 if (knowledge.name == null)
                 {
-                    this.BeginInvoke(new Action<string, Knowledge, string, int>(InsertOneKnowledge),
+                    this.Invoke(new Action<string, Knowledge, string, int>(InsertOneKnowledge),
                         knowledgeDir.FullName, knowledge, "编号无效，请确保遗迹类型存在", i - successCount);
                     continue;
                 }
@@ -231,7 +232,7 @@ namespace QingHaiGeo
                 }
                 catch
                 {
-                    this.BeginInvoke(new Action<string, Knowledge, string, int>(InsertOneKnowledge),
+                    this.Invoke(new Action<string, Knowledge, string, int>(InsertOneKnowledge),
                         knowledgeDir.FullName, knowledge, "读取地质特征失败", i - successCount);
                     continue;
                 }
@@ -255,7 +256,7 @@ namespace QingHaiGeo
                 }
                 catch
                 {
-                    this.BeginInvoke(new Action<string, Knowledge, string, int>(InsertOneKnowledge),
+                    this.Invoke(new Action<string, Knowledge, string, int>(InsertOneKnowledge),
                         knowledgeDir.FullName, knowledge, "读取简介失败", i - successCount);
                     continue;
                 }
@@ -285,10 +286,10 @@ namespace QingHaiGeo
             if (relic != null)
             {
                 location += relic.location.latitude < 0 ? "S" : "N";
-                location += Math.Abs(relic.location.latitude).ToString();
+                location += Math.Abs(relic.location.latitude).ToString("F2");
                 location += ",";
                 location += relic.location.longitude < 0 ? "W" : "E";
-                location += Math.Abs(relic.location.longitude).ToString();
+                location += Math.Abs(relic.location.longitude).ToString("F2");
                 location += ",";
                 location += relic.location.altitude + "m";
             }
@@ -503,11 +504,11 @@ namespace QingHaiGeo
         private bool TryParseDegree(string degree, out double result)
         {
             result = 0;
-            if (degree == null || degree == string.Empty)
+            if (String.IsNullOrWhiteSpace(degree))
                 return false;
             if (Double.TryParse(degree, out result))
                 return true;
-            degree = degree.Replace('°', '|').Replace('′', '|').Replace('″', '|');
+            degree = degree.Trim().Replace('°', '|').Replace('′', '|').Replace("″", "");
             string[] degrees = degree.Split('|');
             if (degrees.Length != 3)
                 return false;

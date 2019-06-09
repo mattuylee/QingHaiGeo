@@ -37,8 +37,9 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "WebViewForm";
             this.Text = "后台管理";
-            this.Activated += new System.EventHandler(this.WebAPIForm_Activated);
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WebAPIForm_FormClosing);
+            this.VisibleChanged += new System.EventHandler(this.WebViewForm_VisibleChanged);
             this.ResumeLayout(false);
 
         }

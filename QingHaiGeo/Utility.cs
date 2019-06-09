@@ -32,14 +32,14 @@ namespace QingHaiGeo
                     c += 256;
                 if (c <= 0x7f)
                     continue;
-                if ((c & 0xe0) == 0xc0)
+                else if ((c & 0xe0) == 0xc0)
                 {
                     if (i >= buffer.Length - 1 || (buffer[i + 1] & 0xc0) != 0x80)
                         return false;
                     else
                         ++i;
                 }
-                if ((c & 0xf0) == 0xe0)
+                else if ((c & 0xf0) == 0xe0)
                 {
                     if (i >= buffer.Length - 2 || (buffer[i + 1] & 0xc0) != 0x80
                             || (buffer[i + 2] & 0xc0) != 0x80)

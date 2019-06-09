@@ -38,6 +38,7 @@
             this.prgProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lvwVideos = new System.Windows.Forms.ListView();
+            this.btnRemoveVideo = new System.Windows.Forms.Button();
             this.sstStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -123,17 +124,33 @@
             // 
             // lvwVideos
             // 
+            this.lvwVideos.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lvwVideos.Location = new System.Drawing.Point(15, 69);
             this.lvwVideos.Name = "lvwVideos";
             this.lvwVideos.Size = new System.Drawing.Size(800, 280);
             this.lvwVideos.TabIndex = 16;
             this.lvwVideos.UseCompatibleStateImageBehavior = false;
+            this.lvwVideos.View = System.Windows.Forms.View.List;
+            this.lvwVideos.SelectedIndexChanged += new System.EventHandler(this.lvwVideos_SelectedIndexChanged);
+            // 
+            // btnRemoveVideo
+            // 
+            this.btnRemoveVideo.Enabled = false;
+            this.btnRemoveVideo.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnRemoveVideo.Location = new System.Drawing.Point(559, 13);
+            this.btnRemoveVideo.Name = "btnRemoveVideo";
+            this.btnRemoveVideo.Size = new System.Drawing.Size(125, 40);
+            this.btnRemoveVideo.TabIndex = 17;
+            this.btnRemoveVideo.Text = "移除视频";
+            this.btnRemoveVideo.UseVisualStyleBackColor = true;
+            this.btnRemoveVideo.Click += new System.EventHandler(this.btnRemoveVideo_Click);
             // 
             // VideoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(837, 448);
+            this.Controls.Add(this.btnRemoveVideo);
             this.Controls.Add(this.lvwVideos);
             this.Controls.Add(this.sstStrip);
             this.Controls.Add(this.btnCancel);
@@ -166,5 +183,6 @@
         private System.Windows.Forms.ToolStripProgressBar prgProgress;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.ListView lvwVideos;
+        private System.Windows.Forms.Button btnRemoveVideo;
     }
 }

@@ -27,7 +27,18 @@ namespace QingHaiGeo
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            if (ofdVideo.ShowDialog() == DialogResult.OK)
+            /**
+             * 必须在STA线程中打开对话框
+             * @see https://blog.csdn.net/zzq900503/article/details/13294355
+             */
+            DialogResult result = DialogResult.Cancel;
+            Thread invoke = new Thread(new ThreadStart(()=> {
+                result = ofdVideo.ShowDialog();
+            }));
+            invoke.SetApartmentState(ApartmentState.STA);
+            invoke.Start();
+            invoke.Join();
+            if (result == DialogResult.OK)
             {
                 var item = lvwVideos.FindItemWithText(ofdVideo.FileName);
                 if (item != null)
@@ -40,6 +51,7 @@ namespace QingHaiGeo
         }
         private void VideoForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            e.Cancel = true;
             Exit(true);
         }
         private void btnCancel_Click(object sender, EventArgs e)
@@ -60,7 +72,7 @@ namespace QingHaiGeo
                 MessageBox.Show("列表为空！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            btnAddVideo.Enabled = btnBrowse.Enabled = false;
+            btnAddVideo.Enabled = btnBrowse.Enabled = btnRemoveVideo.Enabled = false;
             prgProgress.Style = ProgressBarStyle.Marquee;
             List<string> videos = new List<string>(lvwVideos.Items.Count);
             foreach (ListViewItem i in lvwVideos.Items)
@@ -69,6 +81,7 @@ namespace QingHaiGeo
             {
                 UploadVideos(txtCode.Text, videos);
             });
+            this.uploadThread.Start();
         }
 
         private void UploadVideos(string code, List<string> videos)
@@ -114,7 +127,7 @@ namespace QingHaiGeo
                 SetStatusTipTextCrossThread((i + 1).ToString() + " / " + videos.Count + ", 正在上传");
                 if (WebAPI.StoreVideo(new FileInfo(videos[i]), out VideoInfo videoInfo))
                 {
-                    this.BeginInvoke(new Action(delegate ()
+                    this.Invoke(new Action(() =>
                     {
                         var item = lvwVideos.FindItemWithText(videos[i]);
                         if (item != null)
@@ -125,7 +138,7 @@ namespace QingHaiGeo
                 else
                 {
                     SetStatusTipTextCrossThread("资源上传失败，正在清除垃圾数据...");
-                    this.BeginInvoke(new Action(delegate ()
+                    this.Invoke(new Action(delegate ()
                     {
                         ListViewItem item = lvwVideos.FindItemWithText(videos[i]);
                         if (item != null)
@@ -133,7 +146,10 @@ namespace QingHaiGeo
                     }));
                     // 删除已上传的部分资源
                     if (videoInfo != null)
-                        WebAPI.DeleteRelic(new Relic() { videos = new VideoInfo[] { videoInfo } });
+                    {
+                        WebAPI.DeleteResource(videoInfo.poster);
+                        WebAPI.DeleteResource(videoInfo.video);
+                    }
                 }
             }
             SetStatusTipTextCrossThread("资源上传完毕，正在更新数据...");
@@ -150,6 +166,7 @@ namespace QingHaiGeo
             }
             else
                 EndUpload("上传成功！");
+            SetStatusTipTextCrossThread("");
         }
         //从工作线程调用主线程，设置状态栏提示文本
         private void SetStatusTipTextCrossThread(string text)
@@ -187,10 +204,27 @@ namespace QingHaiGeo
                     prgProgress.Style = ProgressBarStyle.Blocks;
                     prgProgress.Value = 0;
                     lblStatus.Text = "";
+                    this.uploadThread = null;
                 }
+                else
+                    return;
                 if (exit)
-                    this.Close();
+                    this.Dispose();
             }
+            else
+                this.Dispose();
+        }
+
+        private void btnRemoveVideo_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem i in lvwVideos.SelectedItems)
+                lvwVideos.Items.Remove(i);
+        }
+
+        private void lvwVideos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.uploadThread == null)
+                btnRemoveVideo.Enabled = lvwVideos.SelectedItems.Count > 0;
         }
     }
 }

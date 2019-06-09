@@ -237,6 +237,7 @@
     <Compile Include="Pojo\Knowledge.cs" />
     <Compile Include="Pojo\Like.cs" />
     <Compile Include="Pojo\Location.cs" />
+    <Compile Include="Pojo\MediaType.cs" />
     <Compile Include="Pojo\Message.cs" />
     <Compile Include="Pojo\MessageType.cs" />
     <Compile Include="Pojo\Moment.cs" />

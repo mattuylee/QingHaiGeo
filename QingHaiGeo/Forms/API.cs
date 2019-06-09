@@ -73,7 +73,7 @@ namespace QingHaiGeo
                 mongoDatabase.ListCollectionNames();
                 return true;
             }
-            catch { return false; }
+            catch(Exception e) { return false; }
         }
         /// <summary>
         /// 连接到数据库服务器
@@ -114,7 +114,7 @@ namespace QingHaiGeo
             Request request = new Request()
             {
                 Method = HttpMethod.Get,
-                Url = Config.Server + ":" + Config.Port + "/relicTypes?size=999999999"
+                Url = Config.Server + ":" + Config.Port + "/relicTypes?size=99999999"
             };
             try
             {
@@ -134,7 +134,7 @@ namespace QingHaiGeo
                 }
                 return relicTypesCache = relicTypes.ToArray();
             }
-            catch
+            catch(Exception e)
             {
                 return null;
             }
@@ -144,32 +144,37 @@ namespace QingHaiGeo
         /// </summary>
         /// <param name="code">遗迹ID</param>
         /// <returns></returns>
-        //public static Relic GetRelic(string code)
-        //{
-        //    try
-        //    {
-        //        var col = mongoDatabase.GetCollection<Relic>("relic");
-        //        return col.Find(Builders<Relic>.Filter.Eq("code", code)).First();
-        //    }
-        //    catch { return null; }
-
-        //}
+        public static Relic GetRelic(string code)
+        {
+            try
+            {
+                var col = mongoDatabase.GetCollection<Relic>("relic");
+                return col.Find(Builders<Relic>.Filter.Eq("code", code)).First();
+            }
+            catch { return null; }
+        }
         /// <summary>
         /// 将新的视频信息添加到对象
         /// </summary>
         /// <param name="code">遗迹或者地质科普ID</param>
         /// <param name="videos">要添加的视频信息</param>
         /// <returns>是否成功</returns>
-        public static bool AddVideos<T>(string code, IEnumerable<VideoInfo> videos) where T: IRelicMediaResource
+        public static bool AddVideos<T>(string code, IEnumerable<VideoInfo> videos)
         {
             try
             {
-                var col = mongoDatabase.GetCollection<T>(nameof(T).ToLower());
-                var update = Builders<T>.Update.AddToSet("videos", videos);
+                IMongoCollection<T> col = null;
+                if (typeof(T) == typeof(Relic))
+                    col = mongoDatabase.GetCollection<T>("relic");
+                else if (typeof(T) == typeof(Knowledge))
+                    col = mongoDatabase.GetCollection<T>("knowledge");
+                if (col == null)
+                    return false;
+                var update = Builders<T>.Update.AddToSetEach("videos", videos);
                 var res = col.UpdateOne(Builders<T>.Filter.Eq("code", code), update);
                 return res.ModifiedCount > 0;
             }
-            catch { return false; }
+            catch(Exception e) { return false; }
         }
         /// <summary>
         /// 入库普通文件，不分清晰度级别
@@ -299,8 +304,6 @@ namespace QingHaiGeo
                 if (WebAPI.StoreResource(istream, id, SharpnessMode.high) == null)
                     return false;
                 istream.Close();
-                //var f = File.OpenWrite(tempFileName);
-                //f.Close();
                 File.Delete(tempFileName);
             }
             catch
@@ -324,12 +327,12 @@ namespace QingHaiGeo
         /// </summary>
         /// <param name="relic">遗迹</param>
         /// <param name="success">是否成功</param>
+        /// <param name="overrideRelic">是否覆盖原来的。更新信息时传true</param>
         /// <returns>
-        /// 如果遗迹code已经存在，返回数据库中的遗迹对象。
         /// 如果入库成功，返回<paramref name="relic"/>，它的_id字段将被赋值。
         /// 如果出错为null
         /// </returns>
-        public static Relic StoreRelic(Relic relic, out bool success)
+        public static Relic StoreRelic(Relic relic, out bool success, bool overrideRelic = false)
         {
             if (relic == null)
             {
@@ -342,12 +345,21 @@ namespace QingHaiGeo
                 relic.recordTime = DateTime.Now;
                 var col = mongoDatabase.GetCollection<Relic>("relic");
                 var findResult = col.Find(Builders<Relic>.Filter.Eq("code", relic.code));
-                if (findResult.CountDocuments() != 0)
+                if (!overrideRelic && findResult.CountDocuments() != 0)
                 {
                     success = false;
                     return findResult.First();
                 }
-                col.InsertOne(relic);
+                if (overrideRelic)
+                {
+                    UpdateOptions options = new UpdateOptions()
+                    {
+                        IsUpsert = true
+                    };
+                    col.ReplaceOne(Builders<Relic>.Filter.Eq("code", relic.code), relic, options);
+                }
+                else
+                    col.InsertOne(relic);
                 success = true;
                 return relic;
             }
@@ -424,12 +436,22 @@ namespace QingHaiGeo
             catch { return false; }
         }
         /// <summary>
-        /// 从数据库删除文件（不区分清晰的资源）
+        /// 从数据库删除文件（不区分清晰度的资源）
         /// </summary>
         /// <param name="id">文件的文档ID</param>
         public static void DeleteFile(string id)
         {
             gridfsBucket.Delete(new ObjectId(id));
+        }
+        public static bool DeleteResource(string id)
+        {
+            if (String.IsNullOrEmpty(id))
+                return false;
+            bool success = true;
+            success &= DeleteResource(id, SharpnessMode.low);
+            success &= DeleteResource(id, SharpnessMode.mid);
+            success &= DeleteResource(id, SharpnessMode.high);
+            return success;
         }
         /// <summary>
         /// 从数据库删除资源
@@ -482,6 +504,31 @@ namespace QingHaiGeo
             catch { }
         }
 
+
+        public static int GetRelicCount()
+        {
+            var col = mongoDatabase.GetCollection<Relic>("relic");
+            return (int)col.CountDocuments(Builders<Relic>.Filter.Empty);
+        }
+        public static int GetKnowledgeCount()
+        {
+            var col = mongoDatabase.GetCollection<Knowledge>("knowledge");
+            return (int)col.CountDocuments(Builders<Knowledge>.Filter.Empty);
+        }
+        public static int GetUserCount()
+        {
+            var col = mongoDatabase.GetCollection<User>("user");
+            return (int)col.CountDocuments(Builders<User>.Filter.Empty);
+        }
+
+        public static bool UpdateKnowledgeTrait(string code, string trait)
+        {
+            var col = mongoDatabase.GetCollection<Knowledge>("knowledge");
+            Knowledge knowledge = col.FindOneAndUpdate(Builders<Knowledge>.Filter.Eq("code", code),
+                Builders<Knowledge>.Update.Set("trait", trait));
+            return knowledge != null;
+        }
+
         [DllImport("wininet.dll")]
         private extern static bool InternetGetConnectedState(int Description, int ReservedValue);
 
@@ -493,5 +540,3 @@ namespace QingHaiGeo
         private static bool isDatabaseConnected;
     }
 }
-
-
