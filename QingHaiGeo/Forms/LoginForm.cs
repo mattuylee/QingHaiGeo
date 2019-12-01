@@ -180,11 +180,6 @@ namespace QingHaiGeo
             }
             this.Invoke(new Action(this.LoginSuccessCallback));
         }
-        private void btnConfig_Click(object sender, EventArgs e)
-        {
-            SettingForm.Instance.Show();
-            SettingForm.Instance.Focus();
-        }
 
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -196,6 +191,17 @@ namespace QingHaiGeo
             {
                 Application.Exit();
             }
+        }
+
+        private void lblConfig_Click(object sender, EventArgs e)
+        {
+            SettingForm.Instance.Show();
+            SettingForm.Instance.Focus();
+        }
+
+        private void lklWebsite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(lklWebsite.Text);
         }
     }
 }

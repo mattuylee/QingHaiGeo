@@ -134,10 +134,7 @@ namespace QingHaiGeo
                 }
                 return relicTypesCache = relicTypes.ToArray();
             }
-            catch(Exception e)
-            {
-                return null;
-            }
+            catch (Exception e) { return null; }
         }
         /// <summary>
         /// 获取遗迹
