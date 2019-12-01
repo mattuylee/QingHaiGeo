@@ -74,12 +74,12 @@
             this.pnlButton.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlButton.Location = new System.Drawing.Point(787, 0);
             this.pnlButton.Name = "pnlButton";
-            this.pnlButton.Size = new System.Drawing.Size(470, 58);
+            this.pnlButton.Size = new System.Drawing.Size(470, 56);
             this.pnlButton.TabIndex = 13;
             // 
             // btnStore
             // 
-            this.btnStore.Font = new System.Drawing.Font("SimSun", 13.8F);
+            this.btnStore.Font = new System.Drawing.Font("宋体", 13.8F);
             this.btnStore.Location = new System.Drawing.Point(166, 5);
             this.btnStore.Name = "btnStore";
             this.btnStore.Size = new System.Drawing.Size(127, 48);
@@ -93,7 +93,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Font = new System.Drawing.Font("SimSun", 13.8F);
+            this.btnCancel.Font = new System.Drawing.Font("宋体", 13.8F);
             this.btnCancel.Location = new System.Drawing.Point(313, 5);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(127, 48);
@@ -106,7 +106,7 @@
             // 
             // btnScan
             // 
-            this.btnScan.Font = new System.Drawing.Font("SimSun", 13.8F);
+            this.btnScan.Font = new System.Drawing.Font("宋体", 13.8F);
             this.btnScan.Location = new System.Drawing.Point(20, 5);
             this.btnScan.Name = "btnScan";
             this.btnScan.Size = new System.Drawing.Size(127, 48);
@@ -123,9 +123,9 @@
             this.ssrStatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.prgStore,
             this.lblStatus});
-            this.ssrStatusBar.Location = new System.Drawing.Point(0, 58);
+            this.ssrStatusBar.Location = new System.Drawing.Point(0, 56);
             this.ssrStatusBar.Name = "ssrStatusBar";
-            this.ssrStatusBar.Size = new System.Drawing.Size(1257, 33);
+            this.ssrStatusBar.Size = new System.Drawing.Size(1257, 35);
             this.ssrStatusBar.TabIndex = 11;
             // 
             // prgStore
@@ -140,7 +140,7 @@
             // 
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Padding = new System.Windows.Forms.Padding(5, 4, 0, 4);
-            this.lblStatus.Size = new System.Drawing.Size(44, 28);
+            this.lblStatus.Size = new System.Drawing.Size(44, 29);
             this.lblStatus.Text = "就绪";
             // 
             // pnlTop
@@ -166,7 +166,7 @@
             // txtScanPath
             // 
             this.txtScanPath.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtScanPath.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtScanPath.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtScanPath.Location = new System.Drawing.Point(0, 0);
             this.txtScanPath.Name = "txtScanPath";
             this.txtScanPath.Size = new System.Drawing.Size(887, 30);
@@ -187,7 +187,7 @@
             // lblPath
             // 
             this.lblPath.AutoSize = true;
-            this.lblPath.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblPath.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblPath.Location = new System.Drawing.Point(152, 27);
             this.lblPath.Name = "lblPath";
             this.lblPath.Size = new System.Drawing.Size(109, 20);
@@ -197,7 +197,7 @@
             // cmbScanType
             // 
             this.cmbScanType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbScanType.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbScanType.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbScanType.FormattingEnabled = true;
             this.cmbScanType.ItemHeight = 20;
             this.cmbScanType.Items.AddRange(new object[] {
@@ -222,7 +222,7 @@
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnBrowse.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnBrowse.Location = new System.Drawing.Point(21, 22);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(69, 30);
@@ -236,9 +236,10 @@
             // lvwList
             // 
             this.lvwList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvwList.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lvwList.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lvwList.FullRowSelect = true;
             this.lvwList.GridLines = true;
+            this.lvwList.HideSelection = false;
             this.lvwList.Location = new System.Drawing.Point(0, 75);
             this.lvwList.Name = "lvwList";
             this.lvwList.Size = new System.Drawing.Size(1257, 561);
@@ -257,6 +258,7 @@
             this.Controls.Add(this.pnlBottom);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ScanForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "批量扫描入库";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanForm_FormClosing);
             this.VisibleChanged += new System.EventHandler(this.ScanForm_VisibleChanged);

@@ -26,5 +26,6 @@ public class VideoInfo {
     public string video;
 
 
+    public string _class;
 
 }

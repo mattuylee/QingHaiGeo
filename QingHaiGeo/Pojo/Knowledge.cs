@@ -75,5 +75,6 @@ namespace QingHaiGeo{
         /// </summary>
         public DateTime recordTime;
 
+
     }
 }

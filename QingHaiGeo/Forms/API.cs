@@ -151,7 +151,7 @@ namespace QingHaiGeo
                 var col = mongoDatabase.GetCollection<Relic>("relic");
                 return col.Find(Builders<Relic>.Filter.Eq("code", code)).First();
             }
-            catch { return null; }
+            catch(Exception e) { return null; }
         }
         /// <summary>
         /// 将新的视频信息添加到对象
@@ -312,11 +312,11 @@ namespace QingHaiGeo
             }
             //视频缩略图（如果失败忽略）
             FileInfo posterFile = new FileInfo(
-                videoFile.Directory.FullName + "\\" + Path.GetFileNameWithoutExtension(videoFile.Name) + "jpg");
+                videoFile.Directory.FullName + "\\" + Path.GetFileNameWithoutExtension(videoFile.Name) + ".jpg");
             if (!posterFile.Exists)
             {
                 posterFile = new FileInfo(
-                    videoFile.Directory.FullName + "\\" + Path.GetFileNameWithoutExtension(videoFile.Name) + "png");
+                    videoFile.Directory.FullName + "\\" + Path.GetFileNameWithoutExtension(videoFile.Name) + ".png");
             }
             if (posterFile.Exists)
                 StorePicture(posterFile, out videoInfo.poster, true);

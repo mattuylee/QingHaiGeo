@@ -30,6 +30,15 @@ namespace QingHaiGeo
         {
             InitializeComponent();
         }
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            lblManage.BackColor = lblUpload.BackColor = Color.FromArgb(128, 0, 0, 0);
+            this.btnLogin_Click(null, null);
+            if (!Config.IsLogged)
+            {
+                Close();
+            }
+        }
         private void btnLogin_Click(object sender, EventArgs e)
         {
             if (Config.IsLogged)
@@ -37,29 +46,10 @@ namespace QingHaiGeo
                 Config.IsLogged = false;
                 return;
             }
-            LoginForm.Instance.Show();
-            LoginForm.Instance.Focus();
+            LoginForm.Instance.ShowDialog();
         }
 
-        private void btnConfig_Click(object sender, EventArgs e)
-        {
-            SettingForm.Instance.Show();
-            SettingForm.Instance.Focus();
-        }
-
-        private void btnScan_Click(object sender, EventArgs e)
-        {
-            if (!Config.IsLogged)
-            {
-                MessageBox.Show("您尚未登录，请先登录。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoginForm.Instance.Show();
-                LoginForm.Instance.Focus();
-                return;
-            }
-            this.Hide();
-            ScanForm.Instance.Show();
-            ScanForm.Instance.Focus();
-        }
+     
         private void btnTestServer_Click(object sender, EventArgs e)
         {
             btnTestServer.Enabled = false;
@@ -117,24 +107,41 @@ namespace QingHaiGeo
             });
         }
 
-        private void btnManage_Click(object sender, EventArgs e)
+        private void label_MouseLeave(object sender, EventArgs e)
+        {
+            Label label = sender as Label;
+            label.BackColor = Color.FromArgb(128, 0, 0, 0);
+        }
+
+        private void label_MouseEnter(object sender, EventArgs e)
+        {
+            Label label = sender as Label;
+            label.BackColor = Color.FromArgb(200, 0, 0, 0);
+        }
+
+        private void lblManage_Click(object sender, EventArgs e)
         {
             if (!Config.IsLogged)
                 LoginForm.Instance.ShowDialog();
             if (!Config.IsLogged)
                 return;
-            if (!this.dbConnected || !this.serverConnected)
-            {
-                MessageBox.Show("请等待服务器连接测试结束。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                if (!this.dbConnected && btnTestDb.Enabled)
-                    btnTestDb_Click(null, null);
-                if (!this.serverConnected && btnTestServer.Enabled)
-                    btnTestServer_Click(null, null);
-                return;
-            }
             this.Hide();
             WebViewForm.Instance.Show();
             WebViewForm.Instance.Focus();
+        }
+
+        private void lblUpload_Click(object sender, EventArgs e)
+        {
+            if (!Config.IsLogged)
+            {
+                MessageBox.Show("您尚未登录，请先登录。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoginForm.Instance.Show();
+                LoginForm.Instance.Focus();
+                return;
+            }
+            this.Hide();
+            ScanForm.Instance.Show();
+            ScanForm.Instance.Focus();
         }
     }
 }

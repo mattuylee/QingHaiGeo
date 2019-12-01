@@ -179,7 +179,7 @@ namespace QingHaiGeo
             }
         }
         /// <summary>
-        /// 从一个目录扫描遗迹
+        /// 从一个目录扫描地质科普
         /// </summary>
         /// <param name="parent">地质科普目录所在的目录</param>
         private void ScanKnowledges(DirectoryInfo parent)

@@ -36,11 +36,12 @@
             this.btnLogin = new System.Windows.Forms.Button();
             this.chkRememberMe = new System.Windows.Forms.CheckBox();
             this.prgLoading = new System.Windows.Forms.ProgressBar();
+            this.btnConfig = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtUser
             // 
-            this.txtUser.Font = new System.Drawing.Font("KaiTi", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtUser.Font = new System.Drawing.Font("楷体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtUser.Location = new System.Drawing.Point(146, 62);
             this.txtUser.Name = "txtUser";
             this.txtUser.Size = new System.Drawing.Size(296, 34);
@@ -48,7 +49,7 @@
             // 
             // txtPassword
             // 
-            this.txtPassword.Font = new System.Drawing.Font("KaiTi", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtPassword.Font = new System.Drawing.Font("楷体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtPassword.Location = new System.Drawing.Point(146, 144);
             this.txtPassword.MaxLength = 16;
             this.txtPassword.Name = "txtPassword";
@@ -61,7 +62,7 @@
             // lblUser
             // 
             this.lblUser.AutoSize = true;
-            this.lblUser.Font = new System.Drawing.Font("KaiTi", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblUser.Font = new System.Drawing.Font("楷体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblUser.Location = new System.Drawing.Point(143, 34);
             this.lblUser.Name = "lblUser";
             this.lblUser.Size = new System.Drawing.Size(106, 24);
@@ -71,7 +72,7 @@
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Font = new System.Drawing.Font("KaiTi", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblPassword.Font = new System.Drawing.Font("楷体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblPassword.Location = new System.Drawing.Point(143, 117);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(82, 24);
@@ -80,7 +81,7 @@
             // 
             // btnLogin
             // 
-            this.btnLogin.Font = new System.Drawing.Font("SimSun", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnLogin.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnLogin.Location = new System.Drawing.Point(146, 252);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(295, 43);
@@ -92,7 +93,7 @@
             // chkRememberMe
             // 
             this.chkRememberMe.AutoSize = true;
-            this.chkRememberMe.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.chkRememberMe.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkRememberMe.Location = new System.Drawing.Point(146, 207);
             this.chkRememberMe.Name = "chkRememberMe";
             this.chkRememberMe.Size = new System.Drawing.Size(111, 24);
@@ -112,11 +113,22 @@
             this.prgLoading.TabIndex = 4;
             this.prgLoading.Visible = false;
             // 
+            // btnConfig
+            // 
+            this.btnConfig.Location = new System.Drawing.Point(321, 201);
+            this.btnConfig.Name = "btnConfig";
+            this.btnConfig.Size = new System.Drawing.Size(121, 36);
+            this.btnConfig.TabIndex = 5;
+            this.btnConfig.Text = "配置服务器";
+            this.btnConfig.UseVisualStyleBackColor = true;
+            this.btnConfig.Click += new System.EventHandler(this.btnConfig_Click);
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(582, 331);
+            this.Controls.Add(this.btnConfig);
             this.Controls.Add(this.prgLoading);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.chkRememberMe);
@@ -129,6 +141,7 @@
             this.MaximumSize = new System.Drawing.Size(600, 378);
             this.MinimumSize = new System.Drawing.Size(600, 378);
             this.Name = "LoginForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "管理员登录";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LoginForm_FormClosing);
             this.Load += new System.EventHandler(this.Login_Load);
@@ -146,5 +159,6 @@
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.CheckBox chkRememberMe;
         private System.Windows.Forms.ProgressBar prgLoading;
+        private System.Windows.Forms.Button btnConfig;
     }
 }

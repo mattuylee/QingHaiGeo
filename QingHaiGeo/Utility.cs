@@ -173,7 +173,7 @@ namespace QingHaiGeo
                 }
                 string ffmpegPath;
                 if (File.Exists(Application.StartupPath + @"\ffmpeg\bin\ffmpeg.exe"))
-                    ffmpegPath = "\"" + Directory.GetParent(Application.ExecutablePath) + "\\ffmpeg\\bin\\ffmpeg.exe\"";
+                    ffmpegPath = Directory.GetParent(Application.ExecutablePath) + "\\ffmpeg\\bin\\ffmpeg.exe";
                 else
                     ffmpegPath = "ffmpeg";
                 //调用ffmpeg转码
@@ -207,8 +207,14 @@ namespace QingHaiGeo
         /// <returns></returns>
         public static bool TestFFmpeg()
         {
-            if (File.Exists(Application.StartupPath + @"\ffmpeg\bin\ffmpeg.exe"))
+            string path = Application.StartupPath + @"\ffmpeg\bin\ffmpeg.exe";
+            if (File.Exists(path))
                 return true;
+            else if (path.Contains(" "))
+            {
+                MessageBox.Show("错误，运行目录中不能包含空格。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
             Process p = new Process();
             p.StartInfo.FileName = "cmd.exe";
             p.StartInfo.UseShellExecute = false;

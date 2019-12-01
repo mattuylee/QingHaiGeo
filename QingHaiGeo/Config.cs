@@ -25,7 +25,6 @@ namespace QingHaiGeo
             set
             {
                 isLogged = value;
-                MainForm.Instance.btnLogin.Text = isLogged ? "注销" : "登录";
                 if (!isLogged)
                     currentUser = null;
             }

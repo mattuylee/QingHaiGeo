@@ -152,9 +152,10 @@ namespace QingHaiGeo
                     }
                 }
             }
-            if (r.TryGetValue("location", out JToken jLocation))
+            if (r.ContainsKey("location"))
             {
-                Location location = jLocation.Value<Location>();
+                JToken jLocation = r["location"];
+                Location location = jLocation.ToObject<Location>();
                 if (location != null)
                     relic.location = location;
             }
@@ -169,6 +170,9 @@ namespace QingHaiGeo
             if (!WebAPI.UpdateKnowledgeTrait(code, trait))
                 return "更新失败";
             return null;
+        }
+        public void PlayVideo(string url) {
+            System.Diagnostics.Process.Start(url);
         }
     }
 }

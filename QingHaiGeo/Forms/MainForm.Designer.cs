@@ -29,106 +29,109 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.btnConfig = new System.Windows.Forms.Button();
             this.btnLogin = new System.Windows.Forms.Button();
-            this.btnScan = new System.Windows.Forms.Button();
             this.btnTestServer = new System.Windows.Forms.Button();
             this.btnTestDb = new System.Windows.Forms.Button();
-            this.btnManage = new System.Windows.Forms.Button();
+            this.lblManage = new System.Windows.Forms.Label();
+            this.lblUpload = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // btnConfig
-            // 
-            this.btnConfig.Font = new System.Drawing.Font("SimSun", 13.8F);
-            this.btnConfig.Location = new System.Drawing.Point(183, 168);
-            this.btnConfig.Name = "btnConfig";
-            this.btnConfig.Size = new System.Drawing.Size(127, 51);
-            this.btnConfig.TabIndex = 0;
-            this.btnConfig.Text = "配置";
-            this.btnConfig.UseVisualStyleBackColor = true;
-            this.btnConfig.Click += new System.EventHandler(this.btnConfig_Click);
             // 
             // btnLogin
             // 
-            this.btnLogin.Font = new System.Drawing.Font("SimSun", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnLogin.Location = new System.Drawing.Point(335, 88);
+            this.btnLogin.Font = new System.Drawing.Font("宋体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnLogin.Location = new System.Drawing.Point(585, 387);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(127, 51);
             this.btnLogin.TabIndex = 1;
             this.btnLogin.Text = "登录";
             this.btnLogin.UseVisualStyleBackColor = true;
+            this.btnLogin.Visible = false;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
-            // 
-            // btnScan
-            // 
-            this.btnScan.Font = new System.Drawing.Font("SimSun", 13.8F);
-            this.btnScan.Location = new System.Drawing.Point(487, 168);
-            this.btnScan.Name = "btnScan";
-            this.btnScan.Size = new System.Drawing.Size(127, 51);
-            this.btnScan.TabIndex = 2;
-            this.btnScan.Text = "扫描";
-            this.btnScan.UseVisualStyleBackColor = true;
-            this.btnScan.Click += new System.EventHandler(this.btnScan_Click);
             // 
             // btnTestServer
             // 
-            this.btnTestServer.Font = new System.Drawing.Font("SimSun", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnTestServer.Location = new System.Drawing.Point(183, 242);
+            this.btnTestServer.Font = new System.Drawing.Font("宋体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnTestServer.Location = new System.Drawing.Point(99, 387);
             this.btnTestServer.Name = "btnTestServer";
             this.btnTestServer.Size = new System.Drawing.Size(199, 51);
             this.btnTestServer.TabIndex = 3;
             this.btnTestServer.Text = "测试服务器";
             this.btnTestServer.UseVisualStyleBackColor = true;
+            this.btnTestServer.Visible = false;
             this.btnTestServer.Click += new System.EventHandler(this.btnTestServer_Click);
             // 
             // btnTestDb
             // 
-            this.btnTestDb.Font = new System.Drawing.Font("SimSun", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnTestDb.Location = new System.Drawing.Point(415, 242);
+            this.btnTestDb.Font = new System.Drawing.Font("宋体", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnTestDb.Location = new System.Drawing.Point(331, 387);
             this.btnTestDb.Name = "btnTestDb";
             this.btnTestDb.Size = new System.Drawing.Size(199, 51);
             this.btnTestDb.TabIndex = 4;
             this.btnTestDb.Text = "测试数据库";
             this.btnTestDb.UseVisualStyleBackColor = true;
+            this.btnTestDb.Visible = false;
             this.btnTestDb.Click += new System.EventHandler(this.btnTestDb_Click);
             // 
-            // btnManage
+            // lblManage
             // 
-            this.btnManage.Font = new System.Drawing.Font("SimSun", 13.8F);
-            this.btnManage.Location = new System.Drawing.Point(335, 168);
-            this.btnManage.Name = "btnManage";
-            this.btnManage.Size = new System.Drawing.Size(127, 51);
-            this.btnManage.TabIndex = 5;
-            this.btnManage.Text = "管理";
-            this.btnManage.UseVisualStyleBackColor = true;
-            this.btnManage.Click += new System.EventHandler(this.btnManage_Click);
+            this.lblManage.AutoSize = true;
+            this.lblManage.BackColor = System.Drawing.Color.DarkCyan;
+            this.lblManage.Font = new System.Drawing.Font("宋体", 16F);
+            this.lblManage.ForeColor = System.Drawing.Color.White;
+            this.lblManage.Location = new System.Drawing.Point(50, 143);
+            this.lblManage.Name = "lblManage";
+            this.lblManage.Padding = new System.Windows.Forms.Padding(8);
+            this.lblManage.Size = new System.Drawing.Size(164, 43);
+            this.lblManage.TabIndex = 7;
+            this.lblManage.Text = " 数据管理 ";
+            this.lblManage.Click += new System.EventHandler(this.lblManage_Click);
+            this.lblManage.MouseEnter += new System.EventHandler(this.label_MouseEnter);
+            this.lblManage.MouseLeave += new System.EventHandler(this.label_MouseLeave);
+            // 
+            // lblUpload
+            // 
+            this.lblUpload.AutoSize = true;
+            this.lblUpload.BackColor = System.Drawing.Color.DarkCyan;
+            this.lblUpload.Font = new System.Drawing.Font("宋体", 16F);
+            this.lblUpload.ForeColor = System.Drawing.Color.White;
+            this.lblUpload.Location = new System.Drawing.Point(50, 217);
+            this.lblUpload.Name = "lblUpload";
+            this.lblUpload.Padding = new System.Windows.Forms.Padding(8);
+            this.lblUpload.Size = new System.Drawing.Size(164, 43);
+            this.lblUpload.TabIndex = 8;
+            this.lblUpload.Text = " 批量上传 ";
+            this.lblUpload.Click += new System.EventHandler(this.lblUpload_Click);
+            this.lblUpload.MouseEnter += new System.EventHandler(this.label_MouseEnter);
+            this.lblUpload.MouseLeave += new System.EventHandler(this.label_MouseLeave);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.btnManage);
+            this.Controls.Add(this.lblUpload);
+            this.Controls.Add(this.lblManage);
             this.Controls.Add(this.btnTestDb);
             this.Controls.Add(this.btnTestServer);
-            this.Controls.Add(this.btnScan);
             this.Controls.Add(this.btnLogin);
-            this.Controls.Add(this.btnConfig);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "青海地学";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button btnConfig;
-        private System.Windows.Forms.Button btnScan;
         internal System.Windows.Forms.Button btnLogin;
         internal System.Windows.Forms.Button btnTestServer;
         internal System.Windows.Forms.Button btnTestDb;
-        private System.Windows.Forms.Button btnManage;
+        private System.Windows.Forms.Label lblManage;
+        private System.Windows.Forms.Label lblUpload;
     }
 }
 

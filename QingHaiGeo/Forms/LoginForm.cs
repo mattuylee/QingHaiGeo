@@ -98,6 +98,11 @@ namespace QingHaiGeo
         //发起登录，异步线程操作
         private void Login(object requestBodyString)
         {
+            if (Config.Server != "localhost" && Config.Server != "127.0.0.1" && !WebAPI.IsNetworkAvailable())
+            {
+                MessageBox.Show("网络连接失败。请检查网络。", "登录", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             string[] callbackParam = new string[1];
             HttpWebRequest request =
                 (HttpWebRequest)WebRequest.Create(Config.Server + ":" + Config.Port + Config.LoginPath);
@@ -135,7 +140,7 @@ namespace QingHaiGeo
                 if (success)
                     callbackParam[0] = error.ToString();
                 else
-                    callbackParam[0] = "登录服务器失败，请检查服务器地址和端口是否正确！";
+                    callbackParam[0] = "登录服务器失败，请检查服务器地址和端口配置是否正确！";
                 this.Invoke(new Action<string>(this.LoginFailedCallback), callbackParam);
                 return;
             }
@@ -167,26 +172,30 @@ namespace QingHaiGeo
                 this.Invoke(new Action<string>(this.LoginFailedCallback), callbackParam);
                 return;
             }
-
+            if (!WebAPI.TestDatabase())
+            {
+                callbackParam[0] = "连接数据库失败！请检查数据库配置！";
+                this.Invoke(new Action<string>(this.LoginFailedCallback), callbackParam);
+                return;
+            }
             this.Invoke(new Action(this.LoginSuccessCallback));
+        }
+        private void btnConfig_Click(object sender, EventArgs e)
+        {
+            SettingForm.Instance.Show();
+            SettingForm.Instance.Focus();
         }
 
         private void LoginForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
             if (this.loginThread != null)
             {
-                var res =
-                    MessageBox.Show("当前正在登录，取消登录？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-                if (res == DialogResult.OK)
-                {
-                    this.loginThread.Abort();
-                    this.loginThread = null;
-                }
-                else
-                    return;
+                this.loginThread.Abort();
             }
-            this.Hide();
+            if (!Config.IsLogged)
+            {
+                Application.Exit();
+            }
         }
     }
 }
