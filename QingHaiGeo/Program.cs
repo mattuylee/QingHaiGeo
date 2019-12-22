@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -17,7 +18,7 @@ namespace QingHaiGeo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             SetProcessDPIAware();
-            Application.Run(MainForm.Instance);
+            Application.Run(WebViewForm.Instance);
         }
 
         [DllImport("user32")]

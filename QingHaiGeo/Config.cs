@@ -127,13 +127,13 @@ namespace QingHaiGeo
         //登录路径
         public readonly static string LoginPath = "/user/login";
         //服务器端口
-        public static short Port
+        public static ushort Port
         {
             get
             {
                 if (port == 0)
                 {
-                    if(!Int16.TryParse(ReadIniItem(FILE_NAME, "SERVER", "port"), out port))
+                    if(!UInt16.TryParse(ReadIniItem(FILE_NAME, "SERVER", "port"), out port))
                         port = 80;
                 }
                 return port;
@@ -167,13 +167,13 @@ namespace QingHaiGeo
             }
         }
         //数据库端口
-        public static short DbPort
+        public static ushort DbPort
         {
             get
             {
                 if (dbPort == 0)
                 {
-                    if (!Int16.TryParse(ReadIniItem(FILE_NAME, "DATABASE", "port"), out dbPort))
+                    if (!UInt16.TryParse(ReadIniItem(FILE_NAME, "DATABASE", "port"), out dbPort))
                         dbPort = 27017;
                 }
                 return dbPort;
@@ -247,19 +247,20 @@ namespace QingHaiGeo
                 WriteIniItem(FILE_NAME, "DATABASE", "rememberDbPassword", (rememberDbPassword == 1).ToString());
             }
         }
-
+        //本地HTTP服务端口，用于加载管理页面
+        public static ushort localPort = 0;
 
         private static bool isLogged;
         private static string user = null;
         private static string password = null;
         private static int rememberMe = UNDEFINED_VALUE;
         private static string server = null;
-        private static short port = 0;
+        private static ushort port = 0;
         private static string dbUser = null;
         private static string dbPassword = null;
         private static int rememberDbPassword = UNDEFINED_VALUE;
         private static string dbServer = null;
-        private static short dbPort = 0;
+        private static ushort dbPort = 0;
 
         #region
         [DllImport("kernel32")]//返回0表示失败，非0为成功

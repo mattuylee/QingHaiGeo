@@ -83,7 +83,7 @@ namespace QingHaiGeo
                 Config.Password = txtPassword.Text;
             Config.IsLogged = true;
             this.loginThread = null;
-            this.Hide();
+            this.Close();
         }
         //登录失败回调函数
         private void LoginFailedCallback(string err)
@@ -98,12 +98,13 @@ namespace QingHaiGeo
         //发起登录，异步线程操作
         private void Login(object requestBodyString)
         {
+            string[] callbackParam = new string[1];
             if (Config.Server != "localhost" && Config.Server != "127.0.0.1" && !WebAPI.IsNetworkAvailable())
             {
-                MessageBox.Show("网络连接失败。请检查网络。", "登录", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                callbackParam[0] = "网络连接失败。请检查网络。";
+                this.Invoke(new Action<string>(this.LoginFailedCallback), callbackParam);
                 return;
             }
-            string[] callbackParam = new string[1];
             HttpWebRequest request =
                 (HttpWebRequest)WebRequest.Create(Config.Server + ":" + Config.Port + Config.LoginPath);
             request.Method = "POST";

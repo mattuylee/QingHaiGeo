@@ -501,7 +501,6 @@ namespace QingHaiGeo
             catch { }
         }
 
-
         public static int GetRelicCount()
         {
             var col = mongoDatabase.GetCollection<Relic>("relic");

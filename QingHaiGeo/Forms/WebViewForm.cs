@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp;
@@ -18,6 +22,7 @@ namespace QingHaiGeo
     [ComVisible(true)]
     public partial class WebViewForm : Form
     {
+        private Thread httpThread;
         private static WebViewForm instance;
         public static WebViewForm Instance
         {
@@ -28,30 +33,80 @@ namespace QingHaiGeo
                 return WebViewForm.instance;
             }
         }
-        private ChromiumWebBrowser browser = new ChromiumWebBrowser("");
-        private bool inited = false;
+        private ChromiumWebBrowser browser;
+        
         private WebViewForm()
         {
             InitializeComponent();
-            this.browser.RegisterJsObject("NativeObj", this, false);
+            LoginForm.Instance.ShowDialog();
+            if (!Config.IsLogged)
+            {
+                Application.Exit();
+            }
+            HttpListener listerner = new HttpListener();
+            listerner.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
+            Config.localPort = (ushort)GetRandomPort();
+            string prefix = "http://localhost:" + Config.localPort+ "/";
+            listerner.Prefixes.Add(prefix);
+            listerner.Start();
+            this.httpThread = new Thread(new ThreadStart(delegate ()
+            {
+                while (true)
+                {
+                    try
+                    {
+                        HttpListenerContext ctx = listerner.GetContext();
+                        if (ctx.Request.HttpMethod.ToLower() != "get")
+                        {
+                            ctx.Response.StatusCode = 501;
+                            ctx.Response.Close();
+                            continue;
+                        }
+                        string filename = Path.GetDirectoryName(Application.ExecutablePath) + "/web" + ctx.Request.RawUrl;
+                        if (!File.Exists(filename))
+                        {
+                            StreamWriter writer = new StreamWriter(ctx.Response.OutputStream);
+                            ctx.Response.StatusCode = 404;
+                            writer.WriteLine("找不到文件" + filename);
+                            writer.Close();
+                            ctx.Response.Close();
+                            continue;
+                        }
+                        ctx.Response.StatusCode = 200;
+                        FileStream fs = new FileStream(filename, FileMode.Open);
+                        fs.CopyTo(ctx.Response.OutputStream);
+                        fs.Close();
+                        ctx.Response.Close();
+                    }
+                    catch (Exception e) { }
+                }
+            }));
+            this.httpThread.IsBackground = true;
+            this.httpThread.Start();
+            this.browser = new ChromiumWebBrowser(prefix + "index.html");
+        }
+        private void WebViewForm_Load(object sender, EventArgs e)
+        {
+            this.browser.JavascriptObjectRepository.Register("NativeObj", new DataBinding(), false);
             this.browser.Dock = DockStyle.Fill;
             this.browser.Parent = this;
-            this.browser.Load(Config.Server + ":" + Config.Port + "/admin-resource/index.html");
             this.browser.Show();
-            this.inited = true;
         }
-        private void WebViewForm_VisibleChanged(object sender, EventArgs e)
+        private static int GetRandomPort()
         {
-            if (this.Visible && this.inited)
-                this.browser.Load(Config.Server + ":" + Config.Port + "/admin-resource/index.html");
-        }
-        private void WebAPIForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            e.Cancel = true;
-            this.Hide();
-            MainForm.Instance.Show();
-        }
+            var random = new Random();
+            var randomPort = random.Next(10000, 65535);
 
+            while (IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(p => p.Port == randomPort))
+            {
+                randomPort = random.Next(10000, 65535);
+            }
+            return randomPort;
+        }
+    }
+
+    class DataBinding
+    {
         public string Login()
         {
             if (Config.IsLogged)
@@ -129,7 +184,7 @@ namespace QingHaiGeo
             Relic relic;
             if (!r.TryGetValue("code", out var code) || ((relic = WebAPI.GetRelic(code.ToString())) == null))
                 return "遗迹不存在";
-            
+
             if (r.ContainsKey("description"))
             {
                 string description = r["description"].ToString();
@@ -139,7 +194,7 @@ namespace QingHaiGeo
             {
                 relic.name = r["name"].ToString();
             }
-            if (r.ContainsKey("relicTypeCode") && r["relicTypeCode"].ToString() != relic.relicTypeCode )
+            if (r.ContainsKey("relicTypeCode") && r["relicTypeCode"].ToString() != relic.relicTypeCode)
             {
                 RelicType[] types = WebAPI.GetRelicTypes();
                 string t = r["relicTypeCode"].ToString();
@@ -171,8 +226,29 @@ namespace QingHaiGeo
                 return "更新失败";
             return null;
         }
-        public void PlayVideo(string url) {
+        public void PlayVideo(string url)
+        {
             System.Diagnostics.Process.Start(url);
+        }
+        public void UploadRelics()
+        {
+            if (ScanForm.Instance.Visible)
+            {
+                MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            ScanForm.Instance.SetUploadTypeToRelic();
+            ScanForm.Instance.Show();
+        }
+        public void UploadKnowledges()
+        {
+            if (ScanForm.Instance.Visible)
+            {
+                MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            ScanForm.Instance.SetUploadTypeToKnowledge();
+            ScanForm.Instance.Show();
         }
     }
 }

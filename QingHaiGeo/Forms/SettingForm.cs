@@ -82,8 +82,8 @@ namespace QingHaiGeo
             {
                 needRestart = true;
             }
-            Config.Port = (short)port;
-            Config.DbPort = (short)dbPort;
+            Config.Port = (ushort)port;
+            Config.DbPort = (ushort)dbPort;
             Config.DbServer = txtDbServer.Text;
             Config.DbUser = txtDbUser.Text;
             Config.DbPassword = txtDbPassword.Text;

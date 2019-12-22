@@ -293,8 +293,8 @@
         private System.Windows.Forms.Panel pnlBrowseButton;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.Label lblPath;
-        private System.Windows.Forms.ComboBox cmbScanType;
         private System.Windows.Forms.Button btnStore;
         private System.Windows.Forms.ToolStripProgressBar prgStore;
+        private System.Windows.Forms.ComboBox cmbScanType;
     }
 }

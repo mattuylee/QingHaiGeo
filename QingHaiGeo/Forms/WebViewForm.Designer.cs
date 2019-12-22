@@ -38,10 +38,9 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "WebViewForm";
-            this.Text = "后台管理";
+            this.Text = "青海省地质遗迹与地学旅游后台管理系统";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WebAPIForm_FormClosing);
-            this.VisibleChanged += new System.EventHandler(this.WebViewForm_VisibleChanged);
+            this.Load += new System.EventHandler(this.WebViewForm_Load);
             this.ResumeLayout(false);
 
         }

@@ -152,7 +152,7 @@ namespace QingHaiGeo
                 }
                 try
                 {
-                    Stream stream = new FileInfo(relicDir.FullName + "\\introduction.txt").OpenRead();
+                    Stream stream = new FileInfo(relicDir.FullName + "\\" + relic.code + ".txt").OpenRead();
                     byte[] buffer = new byte[stream.Length];
                     stream.Read(buffer, 0, (int)stream.Length);
                     stream.Close();
@@ -756,7 +756,14 @@ namespace QingHaiGeo
         {
             lblStatus.Text = "";
         }
-
+        public void SetUploadTypeToRelic()
+        {
+            this.cmbScanType.SelectedIndex = 0;
+        }
+        public void SetUploadTypeToKnowledge()
+        {
+            this.cmbScanType.SelectedIndex = 1;
+        }
         private System.Windows.Forms.ColumnHeader colPath = new ColumnHeader();
         private System.Windows.Forms.ColumnHeader colCode = new ColumnHeader();
         private System.Windows.Forms.ColumnHeader colName = new ColumnHeader();
