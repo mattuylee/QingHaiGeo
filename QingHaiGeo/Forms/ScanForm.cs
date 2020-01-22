@@ -47,7 +47,7 @@ namespace QingHaiGeo
             this.colType.Width = 200;
             this.colLocation.Text = "遗迹坐标";
             this.colLocation.Width = 200;
-            this.colIntro.Text = "遗迹介绍";
+            this.colIntro.Text = "简介";
             this.colIntro.Width = 100;
             this.colTrait.Text = "特征";
             this.colTrait.Width = 100;
