@@ -99,10 +99,6 @@ namespace QingHaiGeo
             this.browser.Load(prefix + "index.html");
             this.Visible = true;
             this.browser.Show();
-            this.browser.IsBrowserInitializedChanged += (object _, EventArgs ev) =>
-            {
-                this.browser.GetBrowser().ShowDevTools();
-            };
         }
         private static int GetRandomPort()
         {
