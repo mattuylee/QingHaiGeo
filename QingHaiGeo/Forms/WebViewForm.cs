@@ -29,24 +29,26 @@ namespace QingHaiGeo
             get
             {
                 if (WebViewForm.instance == null)
+                {
                     WebViewForm.instance = new WebViewForm();
+                }
                 return WebViewForm.instance;
             }
         }
         private ChromiumWebBrowser browser;
-        
+
         private WebViewForm()
         {
             InitializeComponent();
-            LoginForm.Instance.ShowDialog();
-            if (!Config.IsLogged)
-            {
-                Application.Exit();
-            }
+        }
+        private void WebViewForm_Load(object sender, EventArgs e)
+        {
+            this.Visible = false;
+            this.Opacity = 100;
             HttpListener listerner = new HttpListener();
             listerner.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
             Config.localPort = (ushort)GetRandomPort();
-            string prefix = "http://localhost:" + Config.localPort+ "/";
+            string prefix = "http://localhost:" + Config.localPort + "/";
             listerner.Prefixes.Add(prefix);
             listerner.Start();
             this.httpThread = new Thread(new ThreadStart(delegate ()
@@ -78,19 +80,29 @@ namespace QingHaiGeo
                         fs.Close();
                         ctx.Response.Close();
                     }
-                    catch (Exception e) { }
+                    catch (Exception ev) { }
                 }
             }));
             this.httpThread.IsBackground = true;
             this.httpThread.Start();
-            this.browser = new ChromiumWebBrowser(prefix + "index.html");
-        }
-        private void WebViewForm_Load(object sender, EventArgs e)
-        {
-            this.browser.JavascriptObjectRepository.Register("NativeObj", new DataBinding(), false);
+            this.browser = new ChromiumWebBrowser("");
+            BindingOptions option = new BindingOptions() { CamelCaseJavascriptNames = false };
+            this.browser.JavascriptObjectRepository.Register("NativeObj", new DataBinding(), false, option);
             this.browser.Dock = DockStyle.Fill;
             this.browser.Parent = this;
+            LoginForm.Instance.ShowDialog();
+            if (!Config.IsLogged)
+            {
+                this.Close();
+                return;
+            }
+            this.browser.Load(prefix + "index.html");
+            this.Visible = true;
             this.browser.Show();
+            this.browser.IsBrowserInitializedChanged += (object _, EventArgs ev) =>
+            {
+                this.browser.GetBrowser().ShowDevTools();
+            };
         }
         private static int GetRandomPort()
         {
@@ -111,7 +123,10 @@ namespace QingHaiGeo
         {
             if (Config.IsLogged)
                 return Config.CurrentUser.id;
-            LoginForm.Instance.ShowDialog();
+            WebViewForm.Instance.Invoke(new Action(() =>
+            {
+                LoginForm.Instance.ShowDialog();
+            }));
             if (Config.IsLogged)
                 return Config.CurrentUser.id;
             else
@@ -119,45 +134,39 @@ namespace QingHaiGeo
         }
         public void AddRelicVideo(string code)
         {
-            if (Config.IsLogged)
+            WebViewForm.Instance.Invoke(new Action(() =>
             {
-                new VideoForm(code, TargetType.relic).ShowDialog();
-                return;
-            }
-            var res =
-                MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            if (res != DialogResult.OK)
-                return;
-            LoginForm.Instance.ShowDialog();
-            if (Config.IsLogged)
-                new VideoForm(code, TargetType.relic).ShowDialog();
+                if (Config.IsLogged)
+                {
+                    new VideoForm(code, TargetType.relic).ShowDialog();
+                    return;
+                }
+                var res =
+                    MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                if (res != DialogResult.OK)
+                    return;
+                LoginForm.Instance.ShowDialog();
+                if (Config.IsLogged)
+                    new VideoForm(code, TargetType.relic).ShowDialog();
+            }));
         }
         public void AddKnowledgeVideo(string code)
         {
-            if (Config.IsLogged)
+            WebViewForm.Instance.Invoke(new Action(() =>
             {
-                new VideoForm(code, TargetType.knowledge).ShowDialog();
-                return;
-            }
-            var res =
-                MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            if (res != DialogResult.OK)
-                return;
-            LoginForm.Instance.ShowDialog();
-            if (Config.IsLogged)
-                new VideoForm(code, TargetType.knowledge).ShowDialog();
-        }
-        public int GetRelicCount()
-        {
-            return WebAPI.GetRelicCount();
-        }
-        public int GetKnowledgeCount()
-        {
-            return WebAPI.GetKnowledgeCount();
-        }
-        public int GetUserCount()
-        {
-            return WebAPI.GetUserCount();
+                if (Config.IsLogged)
+                {
+                    new VideoForm(code, TargetType.knowledge).ShowDialog();
+                    return;
+                }
+                var res =
+                    MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                if (res != DialogResult.OK)
+                    return;
+                LoginForm.Instance.ShowDialog();
+                if (Config.IsLogged)
+                    new VideoForm(code, TargetType.knowledge).ShowDialog();
+            }));
         }
         public string GetBaseUrl()
         {
@@ -237,8 +246,11 @@ namespace QingHaiGeo
                 MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            ScanForm.Instance.SetUploadTypeToRelic();
-            ScanForm.Instance.Show();
+            WebViewForm.Instance.Invoke(new Action(() =>
+            {
+                ScanForm.Instance.Show();
+                ScanForm.Instance.SetUploadTypeToRelic();
+            }));
         }
         public void UploadKnowledges()
         {
@@ -247,8 +259,11 @@ namespace QingHaiGeo
                 MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            ScanForm.Instance.SetUploadTypeToKnowledge();
-            ScanForm.Instance.Show();
+            WebViewForm.Instance.Invoke(new Action(() =>
+            {
+                ScanForm.Instance.Show();
+                ScanForm.Instance.SetUploadTypeToKnowledge();
+            }));
         }
     }
 }

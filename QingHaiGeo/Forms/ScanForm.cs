@@ -405,7 +405,7 @@ namespace QingHaiGeo
                     List<VideoInfo> videos = new List<VideoInfo>();
                     foreach (FileInfo videoFile in videoPath.EnumerateFiles("*.mp4"))
                     {
-                        SetStatusTipTextCrossThread(i + " / " + relics.Count + ", 正在入库..." + videoFile.Name);
+                        SetStatusTipTextCrossThread(i + " / " + objects.Count + ", 正在入库..." + videoFile.Name);
                         flag = WebAPI.StoreVideo(videoFile, out VideoInfo videoInfo);
                         if (videoInfo != null)
                             videos.Add(videoInfo);

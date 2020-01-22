@@ -89,12 +89,13 @@ namespace QingHaiGeo
             try
             {
                 mongoClient = new MongoClient(connStr);
+                
                 mongoDatabase = mongoClient.GetDatabase(DATABASE_NAME);
                 mongoDatabase.ListCollectionNames(); //测试连接是否可用
                 gridfsBucket = new GridFSBucket(mongoDatabase);
                 return isDatabaseConnected;
             }
-            catch
+            catch (Exception e)
             {
                 mongoClient = null;
                 return isDatabaseConnected = false;
