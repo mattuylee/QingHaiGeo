@@ -5,6 +5,7 @@
 public enum TargetType {
     relic,
     knowledge,
+    village,
     moment,
     question,
     answer

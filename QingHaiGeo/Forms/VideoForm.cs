@@ -22,6 +22,22 @@ namespace QingHaiGeo
         {
             InitializeComponent();
             this.targetType = targetType;
+            switch (this.targetType)
+            {
+                case TargetType.relic:
+                    this.lblCode.Text = "遗迹编号：";
+                    break;
+                case TargetType.knowledge:
+                    this.lblCode.Text = "科普编号：";
+                    break;
+                case TargetType.village:
+                    this.lblCode.Text = "文化村编号：";
+                    break;
+                default:
+                    MessageBox.Show("参数错误。该对象不支持添加视频。");
+                    this.Close();
+                    break;
+            }
             this.txtCode.Text = code;
         }
 
@@ -103,6 +119,8 @@ namespace QingHaiGeo
                 exist = WebAPI.IsRelicExist(code);
             else if (this.targetType == TargetType.knowledge)
                 exist = WebAPI.IsKnowledgeExist(code);
+            else if (this.targetType == TargetType.village)
+                exist = WebAPI.IsVillageExist(code);
             if (!exist)
             {
                 string name;
@@ -113,6 +131,9 @@ namespace QingHaiGeo
                         break;
                     case TargetType.knowledge:
                         name = "地质科普";
+                        break;
+                    case TargetType.village:
+                        name = "文化村";
                         break;
                     default:
                         name = this.targetType.ToString();
@@ -156,6 +177,8 @@ namespace QingHaiGeo
             bool success = true;
             if (this.targetType == TargetType.knowledge)
                 success = WebAPI.AddVideos<Knowledge>(code, videoinfos);
+            else if (this.targetType == TargetType.village)
+                success = WebAPI.AddVideos<CultureVillage>(code, videoinfos);
             else
                 success = WebAPI.AddVideos<Relic>(code, videoinfos);
             if (!success)

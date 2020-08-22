@@ -230,6 +230,7 @@
     <Compile Include="Pojo\Answer.cs" />
     <Compile Include="Pojo\BaseUser.cs" />
     <Compile Include="Pojo\Comment.cs" />
+    <Compile Include="Pojo\CultureVillage.cs" />
     <Compile Include="Pojo\Favorite.cs" />
     <Compile Include="Pojo\Knowledge.cs" />
     <Compile Include="Pojo\Like.cs" />
@@ -336,6 +337,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

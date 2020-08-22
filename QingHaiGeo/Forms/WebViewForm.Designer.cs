@@ -43,9 +43,7 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.WebViewForm_Load);
             this.ResumeLayout(false);
-
         }
-
         #endregion
     }
 }

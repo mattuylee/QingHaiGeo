@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace QingHaiGeo{
+namespace QingHaiGeo {
     /// <summary>
     /// 地质遗迹
     /// </summary>

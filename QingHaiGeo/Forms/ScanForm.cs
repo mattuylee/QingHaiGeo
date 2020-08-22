@@ -31,6 +31,8 @@ namespace QingHaiGeo
         private Dictionary<string, IRelicMediaResource> relics = new Dictionary<string, IRelicMediaResource>();
         //被扫描到的地质科普
         private Dictionary<string, IRelicMediaResource> knowledges = new Dictionary<string, IRelicMediaResource>();
+        //被扫描到的文化村
+        private Dictionary<string, IRelicMediaResource> villages = new Dictionary<string, IRelicMediaResource>();
 
         private ScanForm()
         {
@@ -265,6 +267,86 @@ namespace QingHaiGeo
             }
         }
         /// <summary>
+        /// 从一个目录扫描文化村
+        /// </summary>
+        /// <param name="parent">文化村目录所在的目录</param>
+        private void ScanVillages(DirectoryInfo parent)
+        {
+            var villageDirs = parent.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
+            int i = -1, successCount = 0;
+            foreach (DirectoryInfo villageDir in villageDirs)
+            {
+                ++i;
+                SetStatusTipTextCrossThread(villageDir.FullName);
+                //元数据文件
+                FileInfo dataFile = new FileInfo(villageDir.FullName + "\\data.txt");
+                if (!dataFile.Exists)
+                {
+                    this.Invoke(new Action<string, CultureVillage, string, int>(InsertOneVillage),
+                        villageDir.FullName, null, "缺失data.txt文件", i - successCount);
+                    continue;
+                }
+                CultureVillage village = new CultureVillage();
+                //读取文化村编号
+                village.code = Config.ReadIniItem(dataFile.FullName, "地质文化村信息", "编号").Trim();
+                if (String.IsNullOrWhiteSpace(village.code))
+                {
+                    this.Invoke(new Action<string, CultureVillage, string, int>(InsertOneVillage),
+                        villageDir.FullName, null, "缺失文化村编号", i - successCount);
+                    continue;
+                }
+                //读取名称
+                village.name = Config.ReadIniItem(dataFile.FullName, "地质文化村信息", "名称");
+                if (village.name == string.Empty)
+                {
+                    this.Invoke(new Action<string, CultureVillage, string, int>(InsertOneVillage),
+                        villageDir.FullName, null, "缺失文化村名称", i - successCount);
+                    continue;
+                }
+                //读取位置
+                village.location = new Location();
+                string longitude = Config.ReadIniItem(dataFile.FullName, "地质文化村信息", "经度").Trim();
+                string latitude = Config.ReadIniItem(dataFile.FullName, "地质文化村信息", "纬度").Trim();
+                string altitude = Config.ReadIniItem(dataFile.FullName, "地质文化村信息", "高程").Trim();
+                byte flag = 1;
+                flag &= Convert.ToByte(TryParseDegree(longitude, out village.location.longitude));
+                flag &= Convert.ToByte(TryParseDegree(latitude, out village.location.latitude));
+                flag &= Convert.ToByte(Double.TryParse(altitude, out village.location.altitude));
+                if (flag == 0)
+                {
+                    this.Invoke(new Action<string, CultureVillage, string, int>(InsertOneVillage),
+                        villageDir.FullName, village, "位置信息不完整", i - successCount);
+                    continue;
+                }
+                try
+                {
+                    Stream stream = new FileInfo(villageDir.FullName + "\\" + village.code + ".txt").OpenRead();
+                    byte[] buffer = new byte[stream.Length];
+                    stream.Read(buffer, 0, (int)stream.Length);
+                    stream.Close();
+                    if (Utility.IsUtf8(buffer))
+                    {
+                        //去除UTF-8的BOM
+                        if (buffer.Length >= 3 && buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
+                            village.description = Encoding.UTF8.GetString(buffer, 3, buffer.Length - 3);
+                        else
+                            village.description = Encoding.UTF8.GetString(buffer);
+                    }
+                    else
+                        village.description = Encoding.Default.GetString(buffer);
+                }
+                catch
+                {
+                    this.Invoke(new Action<string, CultureVillage, string, int>(InsertOneVillage),
+                        villageDir.FullName, village, "简介信息缺失", i - successCount);
+                    continue;
+                }
+                this.BeginInvoke(new Action<string, CultureVillage, string, int>(InsertOneVillage),
+                    villageDir.FullName, village, null, 0);
+                ++successCount;
+            }
+        }
+        /// <summary>
         /// 向列表中插入一条遗迹数据
         /// </summary>
         /// <param name="path">遗迹目录</param>
@@ -285,11 +367,11 @@ namespace QingHaiGeo
             string location = "";
             if (relic != null)
             {
-                location += relic.location.latitude < 0 ? "S" : "N";
                 location += Math.Abs(relic.location.latitude).ToString("F2");
+                location += relic.location.latitude < 0 ? "°S" : "°N";
                 location += ",";
-                location += relic.location.longitude < 0 ? "W" : "E";
                 location += Math.Abs(relic.location.longitude).ToString("F2");
+                location += relic.location.longitude < 0 ? "°W" : "°E";
                 location += ",";
                 location += relic.location.altitude + "m";
             }
@@ -323,13 +405,60 @@ namespace QingHaiGeo
             if (err == null)
                 this.knowledges.Add(path, knowledge);
         }
+        /// <summary>
+        /// 向列表中插入一条遗迹数据
+        /// </summary>
+        /// <param name="path">遗迹目录</param>
+        /// <param name="village">遗迹对象</param>
+        /// <param name="err">错误文本，如果不为null表示扫描出错，将不被入库</param>
+        /// <param name="index">插入的位置索引，仅有错误时生效</param>
+        private void InsertOneVillage(string path, CultureVillage village, string err, int index = 0)
+        {
+            ListViewItem item;
+            if (err == null && index >= 0 && index <= lvwList.Items.Count)
+                item = lvwList.Items.Add(path);
+            else
+                item = lvwList.Items.Insert(index, path);
+            item.SubItems.Add(village == null ? "" : village.code);
+            item.SubItems.Add(village == null ? "" : village.name);
+            string location = "";
+            if (village != null)
+            {
+                location += Math.Abs(village.location.latitude).ToString("F2");
+                location += (village.location.latitude < 0 ? "°S" : "°N");
+                location += ",";
+                location += Math.Abs(village.location.longitude).ToString("F2");
+                location += village.location.longitude < 0 ? "°W" : "°E";
+                location += ",";
+                location += village.location.altitude + "m";
+            }
+            item.SubItems.Add(location);
+            item.SubItems.Add(village == null ? "" : village.description);
+            item.SubItems.Add(err ?? "");
+            if (err == null)
+                this.villages.Add(path, village);
+            else
+                item.ForeColor = Color.Blue;
+        }
         #endregion
         #region 入库作业，在工作线程运行
         private void StoreObjects(TargetType targetType)
         {
-            if (targetType != TargetType.relic && targetType != TargetType.knowledge)
-                throw new ArgumentException("只能入库遗迹和地质科普");
-
+            Dictionary<string, IRelicMediaResource> objects;
+            switch (targetType)
+            {
+                case TargetType.relic:
+                    objects = relics;
+                    break;
+                case TargetType.knowledge:
+                    objects = knowledges;
+                    break;
+                case TargetType.village:
+                    objects = villages;
+                    break;
+                default:
+                    throw new ArgumentException("该类型的数据不支持批量上传。");
+            }
             SetStatusTipTextCrossThread("正在测试数据库连接...");
             if (!WebAPI.TestDatabase())
             {
@@ -337,7 +466,6 @@ namespace QingHaiGeo
                 return;
             }
             int i = 0;
-            Dictionary<string, IRelicMediaResource> objects = targetType == TargetType.relic ? relics : knowledges;
             foreach (var pair in objects)
             {
                 ++i;
@@ -348,17 +476,21 @@ namespace QingHaiGeo
                     SetListItemErrorText(pair.Key, "目录不存在");
                     continue;
                 }
-                bool hasExist = false;
+                bool didExsist = false;
                 if (targetType == TargetType.relic)
-                    hasExist = WebAPI.IsRelicExist(obj.code);
+                    didExsist = WebAPI.IsRelicExist(obj.code);
                 else if (targetType == TargetType.knowledge)
-                    hasExist = WebAPI.IsKnowledgeExist(obj.code);
-                if (hasExist)
+                    didExsist = WebAPI.IsKnowledgeExist(obj.code);
+                else if (targetType == TargetType.village)
+                    didExsist = WebAPI.IsVillageExist(obj.code);
+                if (didExsist)
                 {
                     if (targetType == TargetType.relic)
                         SetListItemErrorText(pair.Key, "遗迹已存在");
                     else if (targetType == TargetType.knowledge)
                         SetListItemErrorText(pair.Key, "地质科普已存在");
+                    else if (targetType == TargetType.village)
+                        SetListItemErrorText(pair.Key, "文化村已存在");
                     continue;
                 }
                 //上传背景音乐
@@ -426,6 +558,8 @@ namespace QingHaiGeo
                     result = WebAPI.StoreRelic(obj as Relic, out success);
                 else if (targetType == TargetType.knowledge)
                     result = WebAPI.StoreKnowledge(obj as Knowledge, out success);
+                else if (targetType == TargetType.village)
+                    result = WebAPI.StoreVillage(obj as CultureVillage, out success);
                 if (!success && result == null)
                 {
                     SetListItemErrorText(pair.Key, "入库失败");
@@ -438,6 +572,8 @@ namespace QingHaiGeo
                         targetName = "遗迹";
                     else if (targetType == TargetType.knowledge)
                         targetName = "地质科普";
+                    else if (targetType == TargetType.village)
+                        targetName = "文化村";
                     SetListItemErrorText(pair.Key, targetName + "已存在");
                     WebAPI.DeleteObject(obj);
                 }
@@ -584,15 +720,18 @@ namespace QingHaiGeo
             lvwList.Items.Clear();
             this.relics.Clear();
             this.knowledges.Clear();
+            this.villages.Clear();
             cmbScanType.Enabled = txtScanPath.Enabled = btnBrowse.Enabled =
             btnScan.Enabled = btnStore.Enabled = false;
-            bool relicFlag = cmbScanType.SelectedIndex == 0;
+            int selectedIndex = cmbScanType.SelectedIndex;
             this.scanThread = new Thread(new ThreadStart(delegate ()
             {
-                if (relicFlag)
+                if (selectedIndex == 0)
                     ScanRelics(parent);
-                else
+                else if (selectedIndex == 1)
                     ScanKnowledges(parent);
+                else if (selectedIndex == 2)
+                    ScanVillages(parent);
                 this.scanThread = null;
                 this.Invoke(new Action(delegate ()
                 {
@@ -610,17 +749,29 @@ namespace QingHaiGeo
                 MessageBox.Show("当前已有工作正在进行！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if ((cmbScanType.SelectedIndex == 0 && this.relics.Count == 0) ||
-                (cmbScanType.SelectedIndex == 1 && this.knowledges.Count == 0))
+            if (!((cmbScanType.SelectedIndex == 0 && this.relics.Count > 0)
+                || (cmbScanType.SelectedIndex == 1 && this.knowledges.Count > 0)
+                || (cmbScanType.SelectedIndex == 2 && this.villages.Count > 0)))
             {
                 MessageBox.Show("没有可入库的对象！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
+            TargetType targetType;
+            if (cmbScanType.SelectedIndex == 0)
+                targetType = TargetType.relic;
+            else if (cmbScanType.SelectedIndex == 1)
+                targetType = TargetType.knowledge;
+            else if (cmbScanType.SelectedIndex == 2)
+                targetType = TargetType.village;
+            else
+            {
+                MessageBox.Show("参数错误。所选对象类型不支持批量上传。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             DialogResult res =
-                MessageBox.Show("入库将会耗费大量时间，请保持网络畅通，耐心等待。是否立即开始？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+            MessageBox.Show("入库将会耗费大量时间，请保持网络畅通，耐心等待。是否立即开始？", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
             if (res != DialogResult.Yes)
                 return;
-
             cmbScanType.Enabled = txtScanPath.Enabled = btnBrowse.Enabled =
             btnScan.Enabled = btnStore.Enabled = false;
             prgStore.Visible = true;
@@ -633,11 +784,6 @@ namespace QingHaiGeo
                 EndStore(null);
                 return;
             }
-            TargetType targetType;
-            if (cmbScanType.SelectedIndex == 0)
-                targetType = TargetType.relic;
-            else
-                targetType = TargetType.knowledge;
             this.storeThread = new Thread(delegate ()
             {
                 StoreObjects(targetType);
@@ -661,6 +807,7 @@ namespace QingHaiGeo
             lvwList.Clear();
             this.relics.Clear();
             this.knowledges.Clear();
+            this.villages.Clear();
             btnStore.Enabled = false;
             if (cmbScanType.SelectedIndex == 0)
             {
@@ -676,7 +823,7 @@ namespace QingHaiGeo
                 this.colError
                 });
             }
-            else
+            else if (cmbScanType.SelectedIndex == 1)
             {
                 this.lvwList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
                 {
@@ -688,11 +835,26 @@ namespace QingHaiGeo
                 this.colError
                 });
             }
+            else if (cmbScanType.SelectedIndex == 2)
+            {
+                this.lvwList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[]
+                {
+                this.colPath,
+                this.colCode,
+                this.colName,
+                this.colLocation,
+                this.colIntro,
+                this.colError
+                });
+            }
         }
         private void btnBrowse_Click(object sender, EventArgs e)
         {
             if (this.fbdBrowsePath.ShowDialog() == DialogResult.OK)
+            {
                 this.txtScanPath.Text = fbdBrowsePath.SelectedPath;
+                this.btnScan_Click(null, null);
+            }
         }
         private void btnCancel_Click(object sender, EventArgs e)
         {
@@ -763,6 +925,10 @@ namespace QingHaiGeo
         public void SetUploadTypeToKnowledge()
         {
             this.cmbScanType.SelectedIndex = 1;
+        }
+        public void SetUploadTypeToVillage()
+        {
+            this.cmbScanType.SelectedIndex = 2;
         }
         private System.Windows.Forms.ColumnHeader colPath = new ColumnHeader();
         private System.Windows.Forms.ColumnHeader colCode = new ColumnHeader();

@@ -267,7 +267,7 @@ namespace QingHaiGeo
         private static extern long WritePrivateProfileString(string section, string key,
             string val, string filePath);
         [DllImport("kernel32")]//返回取得字符串缓冲区的长度
-        private static extern long GetPrivateProfileString(string section, string key,
+        private static extern int GetPrivateProfileString(string section, string key,
             string def, StringBuilder retVal, int size, string filePath);
         #endregion
 

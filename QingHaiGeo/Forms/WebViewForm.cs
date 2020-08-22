@@ -115,6 +115,31 @@ namespace QingHaiGeo
 
     class DataBinding
     {
+        // 确保登录后才允许打开添加视频窗口
+        private bool ShouldOpenVideoWindow()
+        {
+            if (Config.IsLogged)
+            {
+                return true;
+            }
+            var res =
+                MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            if (res != DialogResult.OK)
+                return false;
+            LoginForm.Instance.ShowDialog();
+            return Config.IsLogged;
+        }
+        // 检查是否正在上传数据
+        private bool CheckUploading()
+        {
+            if (ScanForm.Instance.Visible)
+            {
+                MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
         public string Login()
         {
             if (Config.IsLogged)
@@ -132,17 +157,7 @@ namespace QingHaiGeo
         {
             WebViewForm.Instance.Invoke(new Action(() =>
             {
-                if (Config.IsLogged)
-                {
-                    new VideoForm(code, TargetType.relic).ShowDialog();
-                    return;
-                }
-                var res =
-                    MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-                if (res != DialogResult.OK)
-                    return;
-                LoginForm.Instance.ShowDialog();
-                if (Config.IsLogged)
+                if (ShouldOpenVideoWindow())
                     new VideoForm(code, TargetType.relic).ShowDialog();
             }));
         }
@@ -150,18 +165,16 @@ namespace QingHaiGeo
         {
             WebViewForm.Instance.Invoke(new Action(() =>
             {
-                if (Config.IsLogged)
-                {
+                if (ShouldOpenVideoWindow())
                     new VideoForm(code, TargetType.knowledge).ShowDialog();
-                    return;
-                }
-                var res =
-                    MessageBox.Show("请先登录！", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-                if (res != DialogResult.OK)
-                    return;
-                LoginForm.Instance.ShowDialog();
+            }));
+        }
+        public void AddVillageVideo(string code)
+        {
+            WebViewForm.Instance.Invoke(new Action(() =>
+            {
                 if (Config.IsLogged)
-                    new VideoForm(code, TargetType.knowledge).ShowDialog();
+                    new VideoForm(code, TargetType.village).ShowDialog();
             }));
         }
         public string GetBaseUrl()
@@ -225,6 +238,37 @@ namespace QingHaiGeo
             else
                 return "未知错误";
         }
+        public string UpdateVillage(string jsonVillage)
+        {
+            if (String.IsNullOrEmpty(jsonVillage))
+                return "文化村不存在";
+            JObject r = (JObject)JsonConvert.DeserializeObject(jsonVillage);
+            CultureVillage village;
+            if (!r.TryGetValue("code", out var code) || ((village = WebAPI.GetVillage(code.ToString())) == null))
+                return "文化村不存在";
+
+            if (r.ContainsKey("description"))
+            {
+                string description = r["description"].ToString();
+                village.description = String.IsNullOrEmpty(description) ? village.description : description;
+            }
+            if (r.ContainsKey("name") && !String.IsNullOrEmpty(r["name"].ToString()))
+            {
+                village.name = r["name"].ToString();
+            }
+            if (r.ContainsKey("location"))
+            {
+                JToken jLocation = r["location"];
+                Location location = jLocation.ToObject<Location>();
+                if (location != null)
+                    village.location = location;
+            }
+            WebAPI.StoreVillage(village, out bool success, true);
+            if (success)
+                return null;
+            else
+                return "未知错误";
+        }
         public string UpdateKnowledgeTrait(string code, string trait)
         {
             if (!WebAPI.UpdateKnowledgeTrait(code, trait))
@@ -237,9 +281,8 @@ namespace QingHaiGeo
         }
         public void UploadRelics()
         {
-            if (ScanForm.Instance.Visible)
+            if (!CheckUploading())
             {
-                MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             WebViewForm.Instance.Invoke(new Action(() =>
@@ -250,15 +293,26 @@ namespace QingHaiGeo
         }
         public void UploadKnowledges()
         {
-            if (ScanForm.Instance.Visible)
+            if (!CheckUploading())
             {
-                MessageBox.Show("当前正在上传数据，请终止后继续。", "批量上传", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             WebViewForm.Instance.Invoke(new Action(() =>
             {
                 ScanForm.Instance.Show();
                 ScanForm.Instance.SetUploadTypeToKnowledge();
+            }));
+        }
+        public void UploadVillages()
+        {
+            if (!CheckUploading())
+            {
+                return;
+            }
+            WebViewForm.Instance.Invoke(new Action(() =>
+            {
+                ScanForm.Instance.Show();
+                ScanForm.Instance.SetUploadTypeToVillage();
             }));
         }
     }

@@ -45,7 +45,7 @@
             // 
             // txtCode
             // 
-            this.txtCode.Font = new System.Drawing.Font("KaiTi", 12F);
+            this.txtCode.Font = new System.Drawing.Font("楷体", 12F);
             this.txtCode.Location = new System.Drawing.Point(126, 17);
             this.txtCode.Name = "txtCode";
             this.txtCode.ReadOnly = true;
@@ -55,16 +55,16 @@
             // lblCode
             // 
             this.lblCode.AutoSize = true;
-            this.lblCode.Font = new System.Drawing.Font("KaiTi", 12F);
+            this.lblCode.Font = new System.Drawing.Font("楷体", 12F);
             this.lblCode.Location = new System.Drawing.Point(11, 22);
             this.lblCode.Name = "lblCode";
-            this.lblCode.Size = new System.Drawing.Size(109, 20);
+            this.lblCode.Size = new System.Drawing.Size(69, 20);
             this.lblCode.TabIndex = 9;
-            this.lblCode.Text = "科普编号：";
+            this.lblCode.Text = "编号：";
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnBrowse.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnBrowse.Location = new System.Drawing.Point(690, 13);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(125, 40);
@@ -75,7 +75,7 @@
             // 
             // btnAddVideo
             // 
-            this.btnAddVideo.Font = new System.Drawing.Font("SimSun", 13.8F);
+            this.btnAddVideo.Font = new System.Drawing.Font("宋体", 13.8F);
             this.btnAddVideo.Location = new System.Drawing.Point(541, 364);
             this.btnAddVideo.Name = "btnAddVideo";
             this.btnAddVideo.Size = new System.Drawing.Size(127, 51);
@@ -86,7 +86,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Font = new System.Drawing.Font("SimSun", 13.8F);
+            this.btnCancel.Font = new System.Drawing.Font("宋体", 13.8F);
             this.btnCancel.Location = new System.Drawing.Point(688, 364);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(127, 51);
@@ -105,7 +105,7 @@
             this.sstStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.prgProgress,
             this.lblStatus});
-            this.sstStrip.Location = new System.Drawing.Point(0, 424);
+            this.sstStrip.Location = new System.Drawing.Point(0, 426);
             this.sstStrip.Name = "sstStrip";
             this.sstStrip.Size = new System.Drawing.Size(837, 24);
             this.sstStrip.TabIndex = 15;
@@ -125,7 +125,7 @@
             // 
             // lvwVideos
             // 
-            this.lvwVideos.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lvwVideos.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lvwVideos.Location = new System.Drawing.Point(15, 69);
             this.lvwVideos.Name = "lvwVideos";
             this.lvwVideos.Size = new System.Drawing.Size(800, 280);
@@ -137,7 +137,7 @@
             // btnRemoveVideo
             // 
             this.btnRemoveVideo.Enabled = false;
-            this.btnRemoveVideo.Font = new System.Drawing.Font("KaiTi", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnRemoveVideo.Font = new System.Drawing.Font("楷体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnRemoveVideo.Location = new System.Drawing.Point(559, 13);
             this.btnRemoveVideo.Name = "btnRemoveVideo";
             this.btnRemoveVideo.Size = new System.Drawing.Size(125, 40);
@@ -150,7 +150,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(837, 448);
+            this.ClientSize = new System.Drawing.Size(837, 450);
             this.Controls.Add(this.btnRemoveVideo);
             this.Controls.Add(this.lvwVideos);
             this.Controls.Add(this.sstStrip);

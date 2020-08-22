@@ -73,7 +73,7 @@ namespace QingHaiGeo
                 mongoDatabase.ListCollectionNames();
                 return true;
             }
-            catch(Exception e) { return false; }
+            catch (Exception e) { return false; }
         }
         /// <summary>
         /// 连接到数据库服务器
@@ -89,7 +89,7 @@ namespace QingHaiGeo
             try
             {
                 mongoClient = new MongoClient(connStr);
-                
+
                 mongoDatabase = mongoClient.GetDatabase(DATABASE_NAME);
                 mongoDatabase.ListCollectionNames(); //测试连接是否可用
                 gridfsBucket = new GridFSBucket(mongoDatabase);
@@ -101,7 +101,7 @@ namespace QingHaiGeo
                 return isDatabaseConnected = false;
             }
         }
-        
+
         /// <summary>
         /// 获取遗迹类型列表
         /// </summary>
@@ -149,7 +149,21 @@ namespace QingHaiGeo
                 var col = mongoDatabase.GetCollection<Relic>("relic");
                 return col.Find(Builders<Relic>.Filter.Eq("code", code)).First();
             }
-            catch(Exception e) { return null; }
+            catch (Exception e) { return null; }
+        }
+        /// <summary>
+        /// 获取文化村
+        /// </summary>
+        /// <param name="code">文化村ID</param>
+        /// <returns></returns>
+        public static CultureVillage GetVillage(string code)
+        {
+            try
+            {
+                var col = mongoDatabase.GetCollection<CultureVillage>("culture_village");
+                return col.Find(Builders<CultureVillage>.Filter.Eq("code", code)).First();
+            }
+            catch { return null; }
         }
         /// <summary>
         /// 将新的视频信息添加到对象
@@ -166,13 +180,15 @@ namespace QingHaiGeo
                     col = mongoDatabase.GetCollection<T>("relic");
                 else if (typeof(T) == typeof(Knowledge))
                     col = mongoDatabase.GetCollection<T>("knowledge");
+                else if (typeof(T) == typeof(CultureVillage))
+                    col = mongoDatabase.GetCollection<T>("culture_village");
                 if (col == null)
                     return false;
                 var update = Builders<T>.Update.AddToSetEach("videos", videos);
                 var res = col.UpdateOne(Builders<T>.Filter.Eq("code", code), update);
                 return res.ModifiedCount > 0;
             }
-            catch(Exception e) { return false; }
+            catch (Exception e) { return false; }
         }
         /// <summary>
         /// 入库普通文件，不分清晰度级别
@@ -219,7 +235,7 @@ namespace QingHaiGeo
                     objId = gridfsBucket.UploadFromStream(id + mode.ToString(), stream);
                 return id;
             }
-            catch(Exception e) { return null; }
+            catch (Exception e) { return null; }
         }
         /// <summary>
         /// 将图片分三级入库
@@ -386,6 +402,8 @@ namespace QingHaiGeo
             }
             try
             {
+                knowledge.recorder = Config.CurrentUser.id;
+                knowledge.recordTime = DateTime.Now;
                 var col = mongoDatabase.GetCollection<Knowledge>("knowledge");
                 var findResult = col.Find(Builders<Knowledge>.Filter.Eq("code", knowledge.code));
                 if (findResult.CountDocuments() != 0)
@@ -396,6 +414,53 @@ namespace QingHaiGeo
                 col.InsertOne(knowledge);
                 success = true;
                 return knowledge;
+            }
+            catch
+            {
+                success = false;
+                return null;
+            }
+        }
+        /// <summary>
+        /// 入库一个文化村
+        /// </summary>
+        /// <param name="village">文化村</param>
+        /// <param name="success">是否成功</param>
+        /// <param name="overrideVillage">是否覆盖原来的。更新信息时传true</param>
+        /// <returns>
+        /// 如果入库成功，返回<paramref name="village"/>，它的_id字段将被赋值。
+        /// 如果出错为null
+        /// </returns>
+        public static CultureVillage StoreVillage(CultureVillage village, out bool success, bool overrideVillage = false)
+        {
+            if (village == null)
+            {
+                success = false;
+                return null;
+            }
+            try
+            {
+                village.recorder = Config.CurrentUser.id;
+                village.recordTime = DateTime.Now;
+                var col = mongoDatabase.GetCollection<CultureVillage>("culture_village");
+                var findResult = col.Find(Builders<CultureVillage>.Filter.Eq("code", village.code));
+                if (!overrideVillage && findResult.CountDocuments() != 0)
+                {
+                    success = false;
+                    return findResult.First();
+                }
+                if (overrideVillage)
+                {
+                    UpdateOptions options = new UpdateOptions()
+                    {
+                        IsUpsert = true
+                    };
+                    col.ReplaceOne(Builders<CultureVillage>.Filter.Eq("code", village.code), village, options);
+                }
+                else
+                    col.InsertOne(village);
+                success = true;
+                return village;
             }
             catch
             {
@@ -428,6 +493,21 @@ namespace QingHaiGeo
             try
             {
                 var col = mongoDatabase.GetCollection<Knowledge>("knowledge");
+                var findResult = col.Find(Builders<Knowledge>.Filter.Eq("code", code));
+                return findResult.CountDocuments() != 0;
+            }
+            catch { return false; }
+        }
+        /// <summary>
+        /// 检查文化村是否已存在于数据库
+        /// </summary>
+        /// <param name="code">文化村ID</param>
+        /// <returns></returns>
+        public static bool IsVillageExist(string code)
+        {
+            try
+            {
+                var col = mongoDatabase.GetCollection<Knowledge>("culture_village");
                 var findResult = col.Find(Builders<Knowledge>.Filter.Eq("code", code));
                 return findResult.CountDocuments() != 0;
             }
@@ -470,7 +550,7 @@ namespace QingHaiGeo
         //从数据库清除指定遗迹或地质科普的数据
         public static void DeleteRelic(Relic relic) { DeleteObject<Relic>(relic); }
         public static void DeleteKnowledge(Knowledge knowledge) { DeleteObject<Knowledge>(knowledge); }
-        public static void DeleteObject<T>(T obj) where T: IRelicMediaResource
+        public static void DeleteObject<T>(T obj) where T : IRelicMediaResource
         {
             if (obj == null) return;
             if (obj.music != null && obj.music != string.Empty)
@@ -496,8 +576,21 @@ namespace QingHaiGeo
                 return;
             try
             {
-                var filter = Builders<Relic>.Filter.Eq("_id", obj._id);
-                mongoDatabase.GetCollection<Relic>("relic").DeleteOne(filter);
+                if (typeof(T) == typeof(Relic))
+                {
+                    var filter = Builders<Relic>.Filter.Eq("_id", obj._id);
+                    mongoDatabase.GetCollection<Relic>("relic").DeleteOne(filter);
+                }
+                else if (typeof(T) == typeof(Knowledge))
+                {
+                    var filter = Builders<Knowledge>.Filter.Eq("_id", obj._id);
+                    mongoDatabase.GetCollection<Knowledge>("relic").DeleteOne(filter);
+                }
+                else if (typeof(T) == typeof(CultureVillage))
+                {
+                    var filter = Builders<CultureVillage>.Filter.Eq("_id", obj._id);
+                    mongoDatabase.GetCollection<CultureVillage>("culture_village").DeleteOne(filter);
+                }
             }
             catch { }
         }

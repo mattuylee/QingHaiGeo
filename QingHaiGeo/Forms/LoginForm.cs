@@ -42,6 +42,11 @@ namespace QingHaiGeo
             this.inited = true;
         }
 
+        private void txtUser_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+                btnLogin_Click(null, null);
+        }
         private void txtPassword_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)

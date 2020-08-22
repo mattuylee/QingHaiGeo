@@ -74,7 +74,7 @@
             this.pnlButton.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlButton.Location = new System.Drawing.Point(787, 0);
             this.pnlButton.Name = "pnlButton";
-            this.pnlButton.Size = new System.Drawing.Size(470, 56);
+            this.pnlButton.Size = new System.Drawing.Size(470, 58);
             this.pnlButton.TabIndex = 13;
             // 
             // btnStore
@@ -98,7 +98,7 @@
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(127, 48);
             this.btnCancel.TabIndex = 5;
-            this.btnCancel.Text = "取消";
+            this.btnCancel.Text = "关闭";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             this.btnCancel.MouseLeave += new System.EventHandler(this.btnCancel_MouseLeave);
@@ -123,9 +123,9 @@
             this.ssrStatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.prgStore,
             this.lblStatus});
-            this.ssrStatusBar.Location = new System.Drawing.Point(0, 56);
+            this.ssrStatusBar.Location = new System.Drawing.Point(0, 58);
             this.ssrStatusBar.Name = "ssrStatusBar";
-            this.ssrStatusBar.Size = new System.Drawing.Size(1257, 35);
+            this.ssrStatusBar.Size = new System.Drawing.Size(1257, 33);
             this.ssrStatusBar.TabIndex = 11;
             // 
             // prgStore
@@ -140,7 +140,7 @@
             // 
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Padding = new System.Windows.Forms.Padding(5, 4, 0, 4);
-            this.lblStatus.Size = new System.Drawing.Size(44, 29);
+            this.lblStatus.Size = new System.Drawing.Size(44, 28);
             this.lblStatus.Text = "就绪";
             // 
             // pnlTop
@@ -202,7 +202,8 @@
             this.cmbScanType.ItemHeight = 20;
             this.cmbScanType.Items.AddRange(new object[] {
             "遗迹",
-            "地质科普"});
+            "地质科普",
+            "文化村"});
             this.cmbScanType.Location = new System.Drawing.Point(23, 25);
             this.cmbScanType.Name = "cmbScanType";
             this.cmbScanType.Size = new System.Drawing.Size(115, 28);
