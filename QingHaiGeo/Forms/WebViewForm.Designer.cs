@@ -41,8 +41,10 @@
             this.Opacity = 0D;
             this.Text = "青海省地质遗迹与地学旅游后台管理系统";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.WebViewForm_FormClosed);
             this.Load += new System.EventHandler(this.WebViewForm_Load);
             this.ResumeLayout(false);
+
         }
         #endregion
     }

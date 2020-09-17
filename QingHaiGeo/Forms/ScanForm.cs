@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace QingHaiGeo
 {
@@ -515,6 +516,10 @@ namespace QingHaiGeo
                     List<string> picIds = new List<string>();
                     foreach (FileInfo picFile in picPath.EnumerateFiles())
                     {
+                        if (!Regex.IsMatch(picFile.Name, @"\.(jpe?g|png|bmp|gif|webq)$"))
+                        {
+                            continue;
+                        }
                         SetStatusTipTextCrossThread(i + " / " + relics.Count + ", 正在入库..." + picFile.Name);
                         flag = WebAPI.StorePicture(picFile, out string picId);
                         if (picId != null)

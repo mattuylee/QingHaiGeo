@@ -111,6 +111,15 @@ namespace QingHaiGeo
             }
             return randomPort;
         }
+
+        private void WebViewForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if(this.httpThread != null)
+            {
+                this.httpThread.Abort();
+            }
+            Application.Exit();
+        }
     }
 
     class DataBinding
