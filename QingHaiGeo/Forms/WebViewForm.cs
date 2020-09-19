@@ -230,6 +230,7 @@ namespace QingHaiGeo
                     if (type.code == t)
                     {
                         relic.relicTypeCode = type.code;
+                        relic.relicType = type;
                         break;
                     }
                 }
